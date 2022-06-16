@@ -24,6 +24,14 @@ CWindow::~CWindow() {
 // ウィンドウクラス登録関数RegisterClass.
 BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName) {
 
+	// メニュー名はNULL.
+	return RegisterClass(hInstance, lpctszClassName, NULL);	// RegisterClass(メニュー名指定バージョン)のメニュー名にNULLを指定.
+
+}
+
+// ウィンドウクラス登録関数RegisterClass(メニュー名指定バージョン)
+BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTSTR lpctszMenuName) {
+
 	// 変数・構造体の宣言
 	WNDCLASS wc;	// WNDCLASS型ウィンドウクラス構造体wc.
 
@@ -35,7 +43,7 @@ BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName) {
 	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);	// LoadIconでアプリケーション既定のアイコンをロード.
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);	// LoadCursorでアプリケーション既定のカーソルをロード.
 	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);	// GetStockObjectで白ブラシを背景とする.
-	wc.lpszMenuName = NULL;	// メニューはなし, なのでNULL.
+	wc.lpszMenuName = lpctszMenuName;	// メニューにはlpctszMenuNameをセット.
 	wc.cbClsExtra = 0;	// とりあえず0を指定.
 	wc.cbWndExtra = 0;	// とりあえず0を指定.
 

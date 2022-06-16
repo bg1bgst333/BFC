@@ -47,9 +47,6 @@ BOOL CUserControl::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWO
 // ウィンドウ破棄関数Destroy
 BOOL CUserControl::Destroy() {
 
-	// メッセージボックスで"CUserControl::Destroy"と表示.
-	MessageBox(m_hWnd, _T("CUserControl::Destroy"), _T("CWindow"), MB_OK);	// MessageBoxで"CUserControl::Destroy"と表示.
-
 	// 親クラスのDestroyを呼ぶ.
 	return CWindow::Destroy();	// CWindow::Destroyを呼ぶ.
 
