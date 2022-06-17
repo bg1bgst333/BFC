@@ -105,3 +105,48 @@ int CMainWindow::OnClose() {
 	return CWindow::OnClose();	// 親クラスのOnCloseを呼ぶ.(親クラスのOnCloseは常に閉じる処理になっている.)
 
 }
+
+// コマンドが発生した時.
+BOOL CMainWindow::OnCommand(WPARAM wParam, LPARAM lParam) {
+
+	// どのメニュー項目が選択されたかを判定する.
+	switch (LOWORD(wParam)) {	// LOWORD(wParam)で選択されたメニュー項目のIDが取得できるので, その値で判定する.
+
+		// 取得したIDごとに処理を分岐.
+		// Item1-1が選択された時.
+		case ID_ITEM_1_1:
+
+			// ID_ITEM_1_1ブロック
+			{
+
+				// OnItem1_1に任せる.
+				return OnItem1_1(wParam, lParam);	// OnItem1_1の値を返す.
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
+
+		// 上記以外の時.
+		default:
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
+
+	}
+
+	// 親クラスのOnCommandを返す.
+	return CWindow::OnCommand(wParam, lParam);	// CWindow::OnCommandを返す.
+
+}
+
+// Item1-1が選択された時.
+BOOL CMainWindow::OnItem1_1(WPARAM wParam, LPARAM lParam) {
+
+	// メッセージボックスを表示.
+	MessageBox(NULL, _T("Item1-1"), _T("BFCSample03"), MB_OK);	// MessageBoxで"Item1-1"と表示.
+
+	// TRUEを返す.
+	return TRUE;	// 処理したのでTRUE.
+
+}
