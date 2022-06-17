@@ -232,6 +232,23 @@ LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 				
 			}
 
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
+
+		// コマンドが発生した時.
+		case WM_COMMAND:
+
+			// WM_COMMANDブロック
+			{
+
+				// OnCommandに任せる.
+				return OnCommand(wParam, lParam) ? 0 : 1;
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
+
 		// 上記以外の時.
 		default:
 
@@ -277,5 +294,13 @@ int CWindow::OnClose() {
 
 	// 常に閉じるものとする.
 	return 0;	// 0を返してウィンドウを閉じる.
+
+}
+
+// コマンドが発生した時.
+BOOL CWindow::OnCommand(WPARAM wParam, LPARAM lParam) {
+
+	// 処理していないのでFALSE.
+	return FALSE;	// returnでFALSEを返す.
 
 }

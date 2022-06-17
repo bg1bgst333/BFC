@@ -27,6 +27,8 @@ class CMainWindow : public CWindow {
 		virtual int OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct);	// ウィンドウの作成が開始された時.
 		virtual void OnDestroy();	// ウィンドウが破棄された時.
 		virtual int OnClose();	// ウィンドウが閉じられる時.
+		virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);	// コマンドが発生した時.
+		BOOL OnItem1_1(WPARAM wParam, LPARAM lParam);	// Item1-1が選択された時.
 
 };
 
