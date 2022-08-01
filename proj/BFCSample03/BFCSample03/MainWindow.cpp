@@ -76,12 +76,8 @@ BOOL CMainWindow::DestroyChildren() {
 // ウィンドウの作成が開始された時.
 int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 
-	// HandlerConditionsの生成と追加.
-	HandlerConditions* pCond = new HandlerConditions();	// HandlerConditionsオブジェクトを作成し, ポインタをpCondに格納.
-	pCond->m_nID = ID_ITEM_1_1;	// pCond->m_nIDにID_ITEM_1_1を格納.
-	pCond->m_nCode = 0;	// pCond->m_nCodeに0を格納.
-	pCond->m_fpHandler = (int(CWindow::*)(WPARAM, LPARAM)) & CMainWindow::OnItem1_1;	// pCond->m_fpHandlerに(int(CWindow::*)(WPARAM, LPARAM))&CMainWindow::OnItem1_1を格納.
-	m_mapHandlerMap.insert(std::pair<DWORD, HandlerConditions*>((DWORD)MAKEWPARAM(ID_ITEM_1_1, 0), pCond));	// m_mapHandlerMap.insertでID_ITEM_1_1, 0をMAKEWPARAMしたものをキー, pCondを値として登録.
+	// メニューハンドラの追加.
+	AddCommandHandler(ID_ITEM_1_1, 0, (int(CWindow::*)(WPARAM, LPARAM)) & CMainWindow::OnItem1_1);	// AddCommandHandlerでID_ITEM_1_1に対するハンドラCMainWindow::OnItem1_1を登録.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.
