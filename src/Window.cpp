@@ -1,12 +1,13 @@
 // ヘッダのインクルード
-// 独自ヘッダ
+// 独自のヘッダ
 #include "Window.h"	// CWindow
 
 // staticメンバ変数の定義.
 std::map<HWND, CWindow *> CWindow::m_mapWindowMap;	// ウィンドウマップm_mapWindowMap.
+std::map<DWORD, HandlerConditions *> CWindow::m_mapHandlerMap;	// ハンドラマップm_mapHandlerMap.
 
 // コンストラクタCWindow()
-CWindow::CWindow() {
+CWindow::CWindow(){
 
 	// メンバの初期化.
 	m_hWnd = NULL;	// m_hWndをNULLで初期化.
@@ -14,7 +15,7 @@ CWindow::CWindow() {
 }
 
 // デストラクタ~CWindow()
-CWindow::~CWindow() {
+CWindow::~CWindow(){
 
 	// メンバの終了処理.
 	Destroy();	// Destroyを呼ぶ.
@@ -22,7 +23,7 @@ CWindow::~CWindow() {
 }
 
 // ウィンドウクラス登録関数RegisterClass.
-BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName) {
+BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName){
 
 	// メニュー名はNULL.
 	return RegisterClass(hInstance, lpctszClassName, NULL);	// RegisterClass(メニュー名指定バージョン)のメニュー名にNULLを指定.
@@ -30,7 +31,7 @@ BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName) {
 }
 
 // ウィンドウクラス登録関数RegisterClass(メニュー名指定バージョン)
-BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTSTR lpctszMenuName) {
+BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTSTR lpctszMenuName){
 
 	// 変数・構造体の宣言
 	WNDCLASS wc;	// WNDCLASS型ウィンドウクラス構造体wc.
@@ -47,8 +48,8 @@ BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTST
 	wc.cbClsExtra = 0;	// とりあえず0を指定.
 	wc.cbWndExtra = 0;	// とりあえず0を指定.
 
-	// ウィンドウクラスの登録.
-	if (!::RegisterClass(&wc)) {	// WindowsAPIのRegisterClassでウィンドウクラスを登録する.
+	// ウィンドウクラスの登録
+	if (!::RegisterClass(&wc)){	// WindowsAPIのRegisterClassでウィンドウクラスを登録する.
 
 		// 戻り値が0なら登録失敗なのでエラー処理.
 		return FALSE;	// FALSEを返す.
@@ -61,13 +62,13 @@ BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTST
 }
 
 // スタティックウィンドウプロシージャStaticWindowProc関数の定義
-LRESULT CALLBACK CWindow::StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK CWindow::StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
 	// ポインタの初期化.
 	CWindow *pWindow = NULL;	// CWindowオブジェクトポインタpWindowをNULLで初期化.
 
 	// ウィンドウメッセージの処理.
-	switch (uMsg) {	// uMsgの値ごとに処理を振り分ける.
+	switch (uMsg){	// uMsgの値ごとに処理を振り分ける.
 
 		// ウィンドウの作成が開始された時.
 		case WM_CREATE:
@@ -80,9 +81,9 @@ LRESULT CALLBACK CWindow::StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, 
 
 				// lParamからlpCreateStructを取り出す.
 				lpCreateStruct = (LPCREATESTRUCT)lParam;	// lParamをLPCREATESTRUCT型にキャストしてlpCreateStructに格納.
-				if (lpCreateStruct != NULL) {	// lpCreateStructがNULLでなければ.
-					pWindow = (CWindow*)lpCreateStruct->lpCreateParams;	// lpCreateStruct->lpCreateParamsはCWindowオブジェクトポインタにキャストし, pWindowに格納.
-					CWindow::m_mapWindowMap.insert(std::pair<HWND, CWindow*>(hwnd, pWindow));	// m_mapWindowMapにhwndとpWindowのペアを登録.
+				if (lpCreateStruct != NULL){	// lpCreateStructがNULLでなければ.
+					pWindow = (CWindow *)lpCreateStruct->lpCreateParams;	// lpCreateStruct->lpCreateParamsはCWindowオブジェクトポインタにキャストし, pWindowに格納.
+					CWindow::m_mapWindowMap.insert(std::pair<HWND, CWindow *>(hwnd, pWindow));	// m_mapWindowMapにhwndとpWindowのペアを登録.
 				}
 
 			}
@@ -97,7 +98,7 @@ LRESULT CALLBACK CWindow::StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, 
 			{
 
 				// hwndでCWindowオブジェクトポインタが引けたら, pWindowに格納.
-				if (CWindow::m_mapWindowMap.find(hwnd) != CWindow::m_mapWindowMap.end()) {
+				if (CWindow::m_mapWindowMap.find(hwnd) != CWindow::m_mapWindowMap.end()){	// findでキーをhwndとするCWindowオブジェクトポインタが見つかったら.
 					pWindow = CWindow::m_mapWindowMap[hwnd];	// pWindowにhwndで引けるCWindowオブジェクトポインタを格納.
 				}
 
@@ -109,13 +110,13 @@ LRESULT CALLBACK CWindow::StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, 
 	}
 
 	// CWindowオブジェクトポインタが取得できなかった場合, 取得できた場合で分ける.
-	if (pWindow == NULL) {	// pWindowがNULL.
+	if (pWindow == NULL){	// pWindowがNULL
 
 		// DefWindowProcに任せる.
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);	// DefWindowProcに引数をそのまま渡して, DefWindowProcの戻り値をそのまま返す.
 
 	}
-	else {	// pWindowがNULLでない時.
+	else{	// pWindowがNULLでない時.
 
 		// そのCWindowオブジェクトのDynamicWindowProcに渡す.
 		return pWindow->DynamicWindowProc(hwnd, uMsg, wParam, lParam);	// pWindow->DynamicWindowProcに引数をそのまま渡して, DynamicWindowProcの戻り値をそのまま返す.
@@ -125,13 +126,13 @@ LRESULT CALLBACK CWindow::StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, 
 }
 
 // ウィンドウ作成関数Create.
-BOOL CWindow::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
+BOOL CWindow::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance){
 
 	// ウィンドウの作成.
 	m_hWnd = CreateWindow(lpctszClassName, lpctszWindowName, dwStyle, x, y, iWidth, iHeight, hWndParent, hMenu, hInstance, this);	// CreateWindowでウィンドウを作成し, ハンドルをm_hWndに格納.(最後の引数にオブジェクト自身のポインタthisを渡す.)
-	if (m_hWnd == NULL) {	// hWndがNULLならウィンドウ作成失敗.
+	if (m_hWnd == NULL){	// m_hWndがNULLなら失敗.
 
-		// hWndがNULLならウィンドウ作成失敗なのでエラー処理.
+		// m_hWndがNULLならウィンドウ作成失敗なのでエラー処理.
 		return FALSE;	// FALSEを返す.
 
 	}
@@ -142,7 +143,7 @@ BOOL CWindow::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dw
 }
 
 // ウィンドウ作成関数Create.(ウィンドウクラス名省略バージョン.)
-BOOL CWindow::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
+BOOL CWindow::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance){// ウィンドウ作成関数Create.(ウィンドウクラス名省略バージョン.)
 
 	// ウィンドウクラス名は"CWindow".
 	return CWindow::Create(_T("CWindow"), lpctszWindowName, dwStyle, x, y, iWidth, iHeight, hWndParent, hMenu, hInstance);	// CWindow::Createにウィンドウクラス名"CWindow"を指定.
@@ -150,15 +151,15 @@ BOOL CWindow::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int 
 }
 
 // ウィンドウ破棄関数Destroy
-BOOL CWindow::Destroy() {
+BOOL CWindow::Destroy(){
 
 	// 変数の初期化.
 	BOOL bDestroy = FALSE;	// 破棄に成功かどうかを示すbDestroyをFALSEに初期化.
 
 	// 破棄処理.
-	if (m_hWnd != NULL) {	// m_hWndがNULLでない時.
+	if (m_hWnd != NULL){	// m_hWndがNULLでない時.
 		bDestroy = DestroyWindow(m_hWnd);	// DestroyWindowでm_hWndを破棄.
-		if (bDestroy) {	// TRUEなら.
+		if (bDestroy){	// TRUEなら.
 			m_hWnd = NULL;	// m_hWndにNULLをセット.
 			return bDestroy;	// bDestroyを返す.
 		}
@@ -170,7 +171,7 @@ BOOL CWindow::Destroy() {
 }
 
 // 子ウィンドウ破棄関数DestroyChildren
-BOOL CWindow::DestroyChildren() {
+BOOL CWindow::DestroyChildren(){
 
 	// ここでは何もせず, 常にFALSEを返す.
 	return FALSE;
@@ -178,18 +179,18 @@ BOOL CWindow::DestroyChildren() {
 }
 
 // ウィンドウ表示関数ShowWindow.
-BOOL CWindow::ShowWindow(int nCmdShow) {
+BOOL CWindow::ShowWindow(int nCmdShow){
 
-	// ウィンドウ表示.
+	// ウィンドウの表示.
 	return ::ShowWindow(m_hWnd, nCmdShow);	// WindowsAPIのShowWindowでm_hWndを表示.
 
 }
 
 // ダイナミックウィンドウプロシージャDynamicWindowProc.
-LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
 	// ウィンドウメッセージの処理.
-	switch (uMsg) {	// uMsgの値ごとに処理を振り分ける.
+	switch (uMsg){	// uMsgの値ごとに処理を振り分ける.
 
 		// ウィンドウの作成が開始された時.
 		case WM_CREATE:
@@ -224,12 +225,12 @@ LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 
 			// WM_CLOSEブロック
 			{
-			
+
 				// OnCloseに任せる.
-				if (OnClose() != 0) {	// 0以外なら.
+				if (OnClose() != 0){	// 0以外なら.
 					return 0;	// 0を返す.(閉じなくなる.)
 				}
-				
+
 			}
 
 			// 既定の処理へ向かう.
@@ -268,7 +269,7 @@ LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 }
 
 // ウィンドウの作成が開始された時.
-int CWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
+int CWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct){
 
 	// 常にウィンドウ作成に成功するものとする.
 	return 0;	// 0を返すと, ウィンドウ作成に成功したということになる.
@@ -276,7 +277,7 @@ int CWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 }
 
 // ウィンドウが破棄された時.
-void CWindow::OnDestroy() {
+void CWindow::OnDestroy(){
 
 	// ウィンドウハンドルはNULL.
 	m_hWnd = NULL;	// NULLをセット.
@@ -287,7 +288,7 @@ void CWindow::OnDestroy() {
 }
 
 // ウィンドウが閉じられる時.
-int CWindow::OnClose() {
+int CWindow::OnClose(){
 
 	// 子ウィンドウの破棄.
 	DestroyChildren();	// DestroyChildrenで子ウィンドウの破棄.
@@ -298,7 +299,19 @@ int CWindow::OnClose() {
 }
 
 // コマンドが発生した時.
-BOOL CWindow::OnCommand(WPARAM wParam, LPARAM lParam) {
+BOOL CWindow::OnCommand(WPARAM wParam, LPARAM lParam){
+
+	// wParamからハンドラ情報を引き出す.
+	HandlerConditions *pCond = NULL;	// HandlerConditionsオブジェクトポインタpCondをNULLに初期化.
+	if (m_mapHandlerMap.find((const unsigned long)wParam) != m_mapHandlerMap.end()){	// findでキーをwParamとするHandlerConditionsオブジェクトポインタが見つかったら.
+		pCond = m_mapHandlerMap[(const unsigned long)wParam];	// wParamでキーが取得できるので, それを使ってハンドラマップからHandlerConditionsオブジェクトポインタを引き出す.
+	}
+	if (pCond != NULL){	// pCondがNULLでないなら, ハンドラ登録されている.
+		int iRet = (this->*pCond->m_fpHandler)(wParam, lParam);	// 登録したハンドラpCond->m_fpHandlerを呼び出し, 戻り値はiRetに格納.
+		if (iRet == 0){	// 0なら処理をした.
+			return TRUE;	// 処理をしたのでTRUE.
+		}
+	}
 
 	// 処理していないのでFALSE.
 	return FALSE;	// returnでFALSEを返す.

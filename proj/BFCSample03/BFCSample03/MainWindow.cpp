@@ -76,6 +76,13 @@ BOOL CMainWindow::DestroyChildren() {
 // ウィンドウの作成が開始された時.
 int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 
+	// HandlerConditionsの生成と追加.
+	HandlerConditions* pCond = new HandlerConditions();	// HandlerConditionsオブジェクトを作成し, ポインタをpCondに格納.
+	pCond->m_nID = ID_ITEM_1_1;	// pCond->m_nIDにID_ITEM_1_1を格納.
+	pCond->m_nCode = 0;	// pCond->m_nCodeに0を格納.
+	pCond->m_fpHandler = (int(CWindow::*)(WPARAM, LPARAM)) & CMainWindow::OnItem1_1;	// pCond->m_fpHandlerに(int(CWindow::*)(WPARAM, LPARAM))&CMainWindow::OnItem1_1を格納.
+	m_mapHandlerMap.insert(std::pair<DWORD, HandlerConditions*>((DWORD)MAKEWPARAM(ID_ITEM_1_1, 0), pCond));	// m_mapHandlerMap.insertでID_ITEM_1_1, 0をMAKEWPARAMしたものをキー, pCondを値として登録.
+
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.
 
@@ -83,6 +90,15 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 
 // ウィンドウが破棄された時.
 void CMainWindow::OnDestroy() {
+
+	// ハンドラマップから指定のハンドラ情報を削除.
+	HandlerConditions* pCond = NULL;	// HandlerConditionsオブジェクトポインタpCondをNULLに初期化.
+	std::map<DWORD, HandlerConditions*>::iterator itor = m_mapHandlerMap.find((DWORD)(MAKEWPARAM(ID_ITEM_1_1, 0)));	// findでキーを(DWORD)(MAKEWPARAM(ID_ITEM_1_1, 0))とするHandlerConditionsオブジェクトポインタのイテレータを取得.
+	if (itor != m_mapHandlerMap.end()) {	// 見つかったら.
+		pCond = m_mapHandlerMap[(DWORD)(MAKEWPARAM(ID_ITEM_1_1, 0))];	// (DWORD)(MAKEWPARAM(ID_ITEM_1_1, 0))を使ってハンドラマップからHandlerConditionsオブジェクトポインタを引き出す.
+		delete pCond;	// HandlerConditionsオブジェクトを破棄.
+		m_mapHandlerMap.erase(itor);	// itorの指す要素を削除.
+	}
 
 	// CWindowのOnDestroyを呼ぶ.
 	CWindow::OnDestroy();	// CWindow::OnDestroyを呼ぶ.
@@ -106,47 +122,13 @@ int CMainWindow::OnClose() {
 
 }
 
-// コマンドが発生した時.
-BOOL CMainWindow::OnCommand(WPARAM wParam, LPARAM lParam) {
-
-	// どのメニュー項目が選択されたかを判定する.
-	switch (LOWORD(wParam)) {	// LOWORD(wParam)で選択されたメニュー項目のIDが取得できるので, その値で判定する.
-
-		// 取得したIDごとに処理を分岐.
-		// Item1-1が選択された時.
-		case ID_ITEM_1_1:
-
-			// ID_ITEM_1_1ブロック
-			{
-
-				// OnItem1_1に任せる.
-				return OnItem1_1(wParam, lParam);	// OnItem1_1の値を返す.
-
-			}
-
-			// 既定の処理へ向かう.
-			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
-
-		// 上記以外の時.
-		default:
-
-			// 既定の処理へ向かう.
-			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
-
-	}
-
-	// 親クラスのOnCommandを返す.
-	return CWindow::OnCommand(wParam, lParam);	// CWindow::OnCommandを返す.
-
-}
-
 // Item1-1が選択された時.
-BOOL CMainWindow::OnItem1_1(WPARAM wParam, LPARAM lParam) {
+int CMainWindow::OnItem1_1(WPARAM wParam, LPARAM lParam) {
 
 	// メッセージボックスを表示.
 	MessageBox(NULL, _T("Item1-1"), _T("BFCSample03"), MB_OK);	// MessageBoxで"Item1-1"と表示.
 
-	// TRUEを返す.
-	return TRUE;	// 処理したのでTRUE.
+	// 0を返す.
+	return 0;	// 処理したので0.
 
 }

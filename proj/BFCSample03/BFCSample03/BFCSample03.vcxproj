@@ -149,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Application.h" />
+    <ClInclude Include="..\..\..\src\HandlerConditions.h" />
     <ClInclude Include="..\..\..\src\Window.h" />
     <ClInclude Include="MainApplication.h" />
     <ClInclude Include="MainWindow.h" />
