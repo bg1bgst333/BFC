@@ -87,14 +87,8 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 // ウィンドウが破棄された時.
 void CMainWindow::OnDestroy() {
 
-	// ハンドラマップから指定のハンドラ情報を削除.
-	HandlerConditions* pCond = NULL;	// HandlerConditionsオブジェクトポインタpCondをNULLに初期化.
-	std::map<DWORD, HandlerConditions*>::iterator itor = m_mapHandlerMap.find((DWORD)(MAKEWPARAM(ID_ITEM_1_1, 0)));	// findでキーを(DWORD)(MAKEWPARAM(ID_ITEM_1_1, 0))とするHandlerConditionsオブジェクトポインタのイテレータを取得.
-	if (itor != m_mapHandlerMap.end()) {	// 見つかったら.
-		pCond = m_mapHandlerMap[(DWORD)(MAKEWPARAM(ID_ITEM_1_1, 0))];	// (DWORD)(MAKEWPARAM(ID_ITEM_1_1, 0))を使ってハンドラマップからHandlerConditionsオブジェクトポインタを引き出す.
-		delete pCond;	// HandlerConditionsオブジェクトを破棄.
-		m_mapHandlerMap.erase(itor);	// itorの指す要素を削除.
-	}
+	// メニューハンドラの削除.
+	DeleteCommandHandler(ID_ITEM_1_1, 0);	// DeleteCommandHandlerでID_ITEM_1_1のハンドラを削除.
 
 	// CWindowのOnDestroyを呼ぶ.
 	CWindow::OnDestroy();	// CWindow::OnDestroyを呼ぶ.
