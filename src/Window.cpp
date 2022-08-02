@@ -198,6 +198,20 @@ void CWindow::AddCommandHandler(UINT nID, UINT nCode, int(CWindow::* handler)(WP
 
 }
 
+// コマンドハンドラの削除.
+void CWindow::DeleteCommandHandler(UINT nID, UINT nCode) {
+
+	// ハンドラマップから指定のハンドラ情報を削除.
+	HandlerConditions* pCond = NULL;	// HandlerConditionsオブジェクトポインタpCondをNULLに初期化.
+	std::map<DWORD, HandlerConditions*>::iterator itor = m_mapHandlerMap.find((DWORD)(MAKEWPARAM(nID, nCode)));	// findでキーを(DWORD)(MAKEWPARAM(nID, nCode))とするHandlerConditionsオブジェクトポインタのイテレータを取得.
+	if (itor != m_mapHandlerMap.end()) {	// 見つかったら.
+		pCond = m_mapHandlerMap[(DWORD)(MAKEWPARAM(nID, nCode))];	// (DWORD)(MAKEWPARAM(nID, nCode))を使ってハンドラマップからHandlerConditionsオブジェクトポインタを引き出す.
+		delete pCond;	// HandlerConditionsオブジェクトを破棄.
+		m_mapHandlerMap.erase(itor);	// itorの指す要素を削除.
+	}
+
+}
+
 // ダイナミックウィンドウプロシージャDynamicWindowProc.
 LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
