@@ -23,7 +23,8 @@ CMainWindow::CMainWindow() {
 	
 	// メンバの初期化.
 	m_pUserControl = NULL;	// m_pUserControlをNULLで初期化.
-	m_pCustomControl = NULL;	// m_pCustomControlをNULLで初期化.
+	m_pCustomControl1 = NULL;	// m_pCustomControl1をNULLで初期化.
+	m_pCustomControl2 = NULL;	// m_pCustomControl2をNULLで初期化.
 
 }
 
@@ -75,10 +76,17 @@ BOOL CMainWindow::DestroyChildren() {
 	}
 
 	// 子ウィンドウの破棄.
-	if (m_pCustomControl != NULL) {	// NULLでなければ.
-		bRet = m_pCustomControl->Destroy();	// m_pCustomControl->Destroyでウィンドウを破棄.
-		delete m_pCustomControl;	// deleteでm_pCustomControlを解放.
-		m_pCustomControl = NULL;	// NULLをセット.
+	if (m_pCustomControl1 != NULL) {	// NULLでなければ.
+		bRet = m_pCustomControl1->Destroy();	// m_pCustomControl1->Destroyでウィンドウを破棄.
+		delete m_pCustomControl1;	// deleteでm_pCustomControl1を解放.
+		m_pCustomControl1 = NULL;	// NULLをセット.
+	}
+
+	// 子ウィンドウの破棄.
+	if (m_pCustomControl2 != NULL) {	// NULLでなければ.
+		bRet = m_pCustomControl2->Destroy();	// m_pCustomControl2->Destroyでウィンドウを破棄.
+		delete m_pCustomControl2;	// deleteでm_pCustomControl2を解放.
+		m_pCustomControl2 = NULL;	// NULLをセット.
 	}
 
 	// 破棄したらTRUEを返す.
@@ -104,10 +112,16 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 	m_pUserControl->Create(_T("UC1"), _T(""), WS_BORDER, 50, 50, 100, 100, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"UC1"のCUserControlウィンドウを作成.
 
 	// カスタムコントロールオブジェクト(ボタン)の作成.
-	m_pCustomControl = new CCustomControl();	// newでCCustomControlオブジェクトを作成し, ポインタをm_pCustomControlに格納.
+	m_pCustomControl1 = new CCustomControl();	// newでCCustomControlオブジェクトを作成し, ポインタをm_pCustomControl1に格納.
 
 	// ウィンドウクラス名"BUTTON"のカスタムコントロール"Button1"のウィンドウ作成.
-	m_pCustomControl->Create(_T("BUTTON"), _T("Button1"), WS_BORDER, 50, 200, 100, 100, hwnd, (HMENU)(WM_APP + 2), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"BUTTON"のCCustomControlウィンドウ"Button1"作成.
+	m_pCustomControl1->Create(_T("BUTTON"), _T("Button1"), WS_BORDER, 50, 200, 100, 100, hwnd, (HMENU)(WM_APP + 2), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"BUTTON"のCCustomControlウィンドウ"Button1"作成.
+
+	// カスタムコントロールオブジェクト(エディット)の作成.
+	m_pCustomControl2 = new CCustomControl();	// newでCCustomControlオブジェクトを作成し, ポインタをm_pCustomControl2に格納.
+
+	// ウィンドウクラス名"EDIT"のカスタムコントロール"Edit1"のウィンドウ作成.
+	m_pCustomControl2->Create(_T("EDIT"), _T("Edit1"), WS_BORDER, 50, 350, 100, 100, hwnd, (HMENU)(WM_APP + 3), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"EDIT"のCCustomControlウィンドウ"Edit1"作成.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.
