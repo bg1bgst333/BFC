@@ -128,8 +128,25 @@ LRESULT CCustomControl::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 
 	}
 
-	// DefWindowProcに任せる.
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);	// 引数をDefWindowProcに渡し, 戻り値をそのまま返す.
+	// 配列の初期化
+	TCHAR tszClassName[256] = { 0 };	// tszClassNameを0で初期化.
+
+	// ウィンドウハンドルからウィンドウクラス名を取得.
+	GetClassName(hwnd, tszClassName, 256);	// GetClassNameでウィンドウクラス名を取得.
+
+	// tszClassNameがm_mapBaseWindowProcMapのキーにあれば.
+	if (m_mapBaseWindowProcMap.find(tszClassName) != m_mapBaseWindowProcMap.end()) {	// みつかったら.
+
+		// 既定のプロシージャに任せる.
+		return CallWindowProc(m_mapBaseWindowProcMap[tszClassName], hwnd, uMsg, wParam, lParam);	// CallWindowProcで, このメッセージをm_mapBaseWindowProcMap[tszClassName]に任せる.
+
+	}
+	else {	// 無い場合.
+
+		// そうでないなら, DefWindowProcに任せる.
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);	// DefWindowProcの値を返す.
+
+	}
 
 }
 
