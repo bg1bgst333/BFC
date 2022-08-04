@@ -114,14 +114,14 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 	// カスタムコントロールオブジェクト(ボタン)の作成.
 	m_pCustomControl1 = new CCustomControl();	// newでCCustomControlオブジェクトを作成し, ポインタをm_pCustomControl1に格納.
 
-	// ウィンドウクラス名"BUTTON"のカスタムコントロール"Button1"のウィンドウ作成.
-	m_pCustomControl1->Create(_T("BUTTON"), _T("Button1"), WS_BORDER, 50, 200, 100, 100, hwnd, (HMENU)(WM_APP + 2), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"BUTTON"のCCustomControlウィンドウ"Button1"作成.
+	// ウィンドウクラス名"Button"のカスタムコントロール"Button1"のウィンドウ作成.
+	m_pCustomControl1->Create(_T("Button"), _T("Button1"), WS_BORDER | BS_PUSHBUTTON, 50, 200, 100, 100, hwnd, (HMENU)(WM_APP + 2), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"Button"のCCustomControlウィンドウ"Button1"作成.
 
 	// カスタムコントロールオブジェクト(エディット)の作成.
 	m_pCustomControl2 = new CCustomControl();	// newでCCustomControlオブジェクトを作成し, ポインタをm_pCustomControl2に格納.
 
-	// ウィンドウクラス名"EDIT"のカスタムコントロール"Edit1"のウィンドウ作成.
-	m_pCustomControl2->Create(_T("EDIT"), _T("Edit1"), WS_BORDER, 50, 350, 100, 100, hwnd, (HMENU)(WM_APP + 3), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"EDIT"のCCustomControlウィンドウ"Edit1"作成.
+	// ウィンドウクラス名"Edit"のカスタムコントロール"Edit1"のウィンドウ作成.
+	m_pCustomControl2->Create(_T("Edit"), _T("Edit1"), WS_BORDER | ES_MULTILINE | ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL, 50, 350, 100, 100, hwnd, (HMENU)(WM_APP + 3), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"Edit"のCCustomControlウィンドウ"Edit1"作成.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.

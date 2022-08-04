@@ -3,7 +3,7 @@
 #include "CustomControl.h"	// CCustomControl
 
 // staticメンバ変数の定義
-std::map<LPCTSTR, WNDPROC>	CCustomControl::m_mapBaseWindowProcMap;	// ベースウィンドウプロシージャマップm_mapBaseWindowProcMap
+std::map<tstring, WNDPROC>	CCustomControl::m_mapBaseWindowProcMap;	// ベースウィンドウプロシージャマップm_mapBaseWindowProcMap
 
 // コンストラクタCCustomControl
 CCustomControl::CCustomControl() : CWindow() {
@@ -18,8 +18,44 @@ CCustomControl::~CCustomControl() {
 // スタティックウィンドウプロシージャStaticWindowProc.
 LRESULT CALLBACK CCustomControl::StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-	// DefWindowProcに任せる.
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);	// DefWindowProcの値を返す.
+	// ポインタの初期化
+	CWindow* pWindow = NULL;	// CWindowオブジェクトポインタpWindowをNULLに初期化.
+
+	// hwndでCWindowオブジェクトポインタが引けたら, pWindowに格納.
+	if (m_mapWindowMap.find(hwnd) != m_mapWindowMap.end()) {	// findでキーをhwndとするCWindowオブジェクトポインタが見つかったら.
+		pWindow = m_mapWindowMap[hwnd];	// pWindowにhwndで引けるCWindowオブジェクトポインタを格納.
+	}
+
+	// ウィンドウオブジェクトを取得できない場合.
+	if (pWindow == NULL) {	// pWindowがNULLの時.
+
+		// 配列の初期化
+		TCHAR tszClassName[256] = { 0 };	// tszClassNameを0で初期化.
+
+		// ウィンドウハンドルからウィンドウクラス名を取得.
+		GetClassName(hwnd, tszClassName, 256);	// GetClassNameでウィンドウクラス名を取得.
+
+		// tszClassNameがm_mapBaseWindowProcMapのキーにあれば.
+		if (m_mapBaseWindowProcMap.find(tszClassName) != m_mapBaseWindowProcMap.end()) {	// みつかったら.
+
+			// 既定のプロシージャに任せる.
+			return CallWindowProc(m_mapBaseWindowProcMap[tszClassName], hwnd, uMsg, wParam, lParam);	// CallWindowProcで, このメッセージをm_mapBaseWindowProcMap[tszClassName]に任せる.
+
+		}
+		else {	// 無い場合.
+
+			// そうでないなら, DefWindowProcに任せる.
+			return DefWindowProc(hwnd, uMsg, wParam, lParam);	// DefWindowProcの値を返す.
+
+		}
+
+	}
+	else {	// pWindowがあった場合.
+
+		// そのウィンドウのDynamicWindowProcに任せる.
+		return pWindow->DynamicWindowProc(hwnd, uMsg, wParam, lParam);	// pWindow->DynamicWindowProcに渡す.
+
+	}
 
 }
 
@@ -55,6 +91,45 @@ BOOL CCustomControl::Destroy() {
 
 	// 親クラスのDestroyを呼ぶ.
 	return CWindow::Destroy();	// CWindow::Destroyを呼ぶ.
+
+}
+
+// ダイナミックウィンドウプロシージャDynamicWindowProc.
+LRESULT CCustomControl::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+	// ウィンドウメッセージの処理
+	switch (uMsg) {	// uMsgの値ごとに処理を振り分ける.
+
+		// ウィンドウが破棄された時.
+		case WM_DESTROY:
+
+			// WM_DESTROYブロック
+			{
+
+				// OnDestroyに任せる.
+				OnDestroy();	// OnDestroyを呼ぶ.
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理へ向かう.
+
+
+		// それ以外の時.
+		default:
+
+			// defaultブロック
+			{
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理へ向かう.
+
+	}
+
+	// DefWindowProcに任せる.
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);	// 引数をDefWindowProcに渡し, 戻り値をそのまま返す.
 
 }
 
