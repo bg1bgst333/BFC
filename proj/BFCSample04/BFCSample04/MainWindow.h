@@ -16,7 +16,8 @@ class CMainWindow : public CWindow {
 
 		// メンバ変数
 		CUserControl* m_pUserControl;	// CUserControlオブジェクトポインタm_pUserControl.
-		CCustomControl* m_pCustomControl;	// CCustomControlオブジェクトポインタm_pCustomControl.
+		CCustomControl* m_pCustomControl1;	// CCustomControlオブジェクトポインタm_pCustomControl1.
+		CCustomControl* m_pCustomControl2;	// CCustomControlオブジェクトポインタm_pCustomControl2.
 
 		// staticメンバ関数
 		static BOOL RegisterClass(HINSTANCE hInstance);	// ウィンドウクラス登録関数RegisterClass.
