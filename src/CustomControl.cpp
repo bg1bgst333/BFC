@@ -161,6 +161,9 @@ int CCustomControl::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 // ウィンドウが破棄された時.
 void CCustomControl::OnDestroy() {
 
-	// ここでは何も呼ばない.
+	// 自分のウィンドウハンドルが残っていたらマップから削除.
+	if (m_mapWindowMap.find(m_hWnd) != m_mapWindowMap.end()) {	// findでみつかったら.
+		m_mapWindowMap.erase(m_hWnd);	// m_mapWindowMap.eraseで削除.
+	}
 
 }
