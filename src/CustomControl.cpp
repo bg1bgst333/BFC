@@ -71,6 +71,17 @@ BOOL CCustomControl::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, D
 		lpfnWndProc = (WNDPROC)GetWindowLong(m_hWnd, GWL_WNDPROC);	// GetWindowLongでプロシージャlpfnWndProcを取得.
 		SetWindowLong(m_hWnd, GWL_WNDPROC, (LONG)StaticWindowProc);	// SetWindowLongでプロシージャCCustomControl::StaticWindowProcを設定.
 
+		// OnCreateは以降は呼ばれないので, ここで呼んでおく.
+		CREATESTRUCT cs;	// CREATESTRUCTを一応用意.
+		cs.hInstance = hInstance;	// hInstanceは要るかもしれないので, これは渡せるようにしておく.
+		if (OnCreate(m_hWnd, &cs) != 0) {	// OnCreateにm_hWndとcsを渡す.
+
+			// 戻り値が0でない場合, 破棄.
+			Destroy();	// Destroyで破棄.
+			return FALSE;	// FALSEを返す.
+
+		}
+
 		// マップのキーにウィンドウクラス名がなければ登録.
 		if (m_mapBaseWindowProcMap.find(lpctszClassName) == m_mapBaseWindowProcMap.end()) {	// マップに無い時.
 			m_mapBaseWindowProcMap.insert(std::pair<LPCTSTR, WNDPROC>(lpctszClassName, lpfnWndProc));	// プロシージャを登録.
