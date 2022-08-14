@@ -212,6 +212,14 @@ void CWindow::DeleteCommandHandler(UINT nID, UINT nCode) {
 
 }
 
+// テキストの設定.
+void CWindow::SetWindowText(LPCTSTR lpctszString) {
+
+	// 指定されたウィンドウテキストを設定する.
+	::SetWindowText(m_hWnd, lpctszString);	// Win32APIのSetWindowTextでlpctszStringをセット.
+
+}
+
 // ダイナミックウィンドウプロシージャDynamicWindowProc.
 LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
