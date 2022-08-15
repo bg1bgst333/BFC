@@ -212,6 +212,14 @@ void CWindow::DeleteCommandHandler(UINT nID, UINT nCode) {
 
 }
 
+// テキストの長さを取得.
+int CWindow::GetWindowTextLength() const {
+
+	// 指定されたウィンドウのテキストの長さを取得して返す.
+	return ::GetWindowTextLength(m_hWnd);	// Win32APIのGetWindowTextLengthで長さを取得してそのまま返す.
+
+}
+
 // テキストの設定.
 void CWindow::SetWindowText(LPCTSTR lpctszString) {
 
