@@ -3,18 +3,8 @@
 #define __CUSTOM_CONTROL_H__
 
 // ヘッダのインクルード
-// 既定のヘッダ
-#include <string>	// std::string
 // 独自のヘッダ
 #include "Window.h"	// CWindow
-
-// マクロの定義
-// UNICODE切り替え
-#ifdef UNICODE
-#define tstring std::wstring
-#else
-#define tstring std::string
-#endif
 
 // カスタムコントロールクラスCCustomControl
 class CCustomControl : public CWindow {

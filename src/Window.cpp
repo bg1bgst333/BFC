@@ -220,6 +220,27 @@ int CWindow::GetWindowText(LPTSTR lptszStringBuf, int nMaxCount) const {
 
 }
 
+// テキストを取得.(tstringの参照バージョン.)
+void CWindow::GetWindowText(tstring& rString) const {
+
+	// テキストの長さを取得.
+	int iLen = GetWindowTextLength();	// CWindow::GetWindowTextLengthで長さを取得.
+
+	// バッファを確保.
+	TCHAR* ptszBuf = new TCHAR[iLen + 1];	// TCHARバッファptszBuf(長さiLen + 1)を確保.
+	ZeroMemory(ptszBuf, sizeof(TCHAR) * (iLen + 1));	// ptszBufの初期化.
+
+	// テキストを取得.
+	GetWindowText(ptszBuf, iLen + 1);	// CWindow::GetWindowTextでテキストを取得.
+
+	// 渡された参照rStringに格納.
+	rString = ptszBuf;	// rStringにptszBufをコピー.
+
+	// バッファを解放.
+	delete[] ptszBuf;	// delete[]でptszBufを解放.
+
+}
+
 // テキストの長さを取得.
 int CWindow::GetWindowTextLength() const {
 

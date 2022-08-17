@@ -152,12 +152,9 @@ int CMainWindow::OnClose() {
 int CMainWindow::OnItem1_1(WPARAM wParam, LPARAM lParam) {
 
 	// m_pEditのテキストを取得.
-	int iEditLen = m_pEdit->GetWindowTextLength();	// CWindow::GetWindowTextLengthでm_pEditのテキストの長さを取得.
-	TCHAR* ptszBuf = new TCHAR[iEditLen + 1];	// TCHARバッファptszBuf(長さiEditLen + 1)を確保.
-	ZeroMemory(ptszBuf, sizeof(TCHAR) * (iEditLen + 1));	// ptszBufの初期化.
-	m_pEdit->GetWindowText(ptszBuf, iEditLen + 1);	// CWindow::GetWindowTextでm_pEditのテキストを取得.
-	MessageBox(NULL, ptszBuf, _T("BFCSample08"), MB_OK);	// MessageBoxでptszBufを表示.
-	delete[] ptszBuf;	// delete[]でptszBufを解放.
+	tstring tstrEdit = _T("");	// tstring型のtstrEditを""で初期化.
+	m_pEdit->GetWindowText(tstrEdit);	// CWindow::GetWindowTextでテキストを取得し, tstrEditに格納.
+	MessageBox(NULL, tstrEdit.c_str(), _T("BFCSample08"), MB_OK);	// MessageBoxでtstrEditを表示.
 
 	// 0を返す.
 	return 0;	// 処理したので0.
