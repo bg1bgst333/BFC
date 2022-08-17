@@ -6,9 +6,18 @@
 // 既定のヘッダ
 #include <windows.h>	// 標準WindowsAPI
 #include <tchar.h>		// TCHAR型
+#include <string>	// std::string
 #include <map>			// std::map
 // 独自のヘッダ
 #include "HandlerConditions.h"	// 構造体HandlerConditions
+
+// マクロの定義
+// UNICODE切り替え
+#ifdef UNICODE
+#define tstring std::wstring
+#else
+#define tstring std::string
+#endif
 
 // ウィンドウクラスCWindowの定義
 class CWindow {
@@ -39,6 +48,7 @@ class CWindow {
 		virtual void AddCommandHandler(UINT nID, UINT nCode, int(CWindow::* handler)(WPARAM wParam, LPARAM lParam));	// コマンドハンドラの追加.
 		virtual void DeleteCommandHandler(UINT nID, UINT nCode);	// コマンドハンドラの削除.
 		virtual int GetWindowText(LPTSTR lptszStringBuf, int nMaxCount) const;	// テキストを取得.
+		virtual void GetWindowText(tstring& rString) const;	// テキストを取得.(tstringの参照バージョン.)
 		virtual int GetWindowTextLength() const;	// テキストの長さを取得.
 		virtual void SetWindowText(LPCTSTR lpctszString);	// テキストの設定.
 		virtual LRESULT DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);	// ダイナミックウィンドウプロシージャDynamicWindowProc
