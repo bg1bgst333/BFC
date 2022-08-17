@@ -1,6 +1,4 @@
 // ヘッダのインクルード
-// 既定のヘッダ
-#include <stdio.h>	// C標準入出力
 // 独自のヘッダ
 #include "MainWindow.h"	// CMainWindow
 
@@ -153,11 +151,13 @@ int CMainWindow::OnClose() {
 // Item1-1が選択された時.
 int CMainWindow::OnItem1_1(WPARAM wParam, LPARAM lParam) {
 
-	// m_pEditのテキストの長さを取得.
+	// m_pEditのテキストを取得.
 	int iEditLen = m_pEdit->GetWindowTextLength();	// CWindow::GetWindowTextLengthでm_pEditのテキストの長さを取得.
-	TCHAR tszEditLen[16] = { 0 };	// m_pEditのテキストの長さの文字列tszEditLen(長さ16)を{0}で初期化.
-	_stprintf(tszEditLen, _T("%d"), iEditLen);	// iEditLenを文字列tszEditLenに変換.
-	MessageBox(NULL, tszEditLen, _T("BFCSample08"), MB_OK);	// MessageBoxでtszEditLenを表示.
+	TCHAR* ptszBuf = new TCHAR[iEditLen + 1];	// TCHARバッファptszBuf(長さiEditLen + 1)を確保.
+	ZeroMemory(ptszBuf, sizeof(TCHAR) * (iEditLen + 1));	// ptszBufの初期化.
+	m_pEdit->GetWindowText(ptszBuf, iEditLen + 1);	// CWindow::GetWindowTextでm_pEditのテキストを取得.
+	MessageBox(NULL, ptszBuf, _T("BFCSample08"), MB_OK);	// MessageBoxでptszBufを表示.
+	delete[] ptszBuf;	// delete[]でptszBufを解放.
 
 	// 0を返す.
 	return 0;	// 処理したので0.
