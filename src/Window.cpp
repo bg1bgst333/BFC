@@ -142,6 +142,14 @@ BOOL CWindow::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dw
 
 }
 
+// ウィンドウ作成関数Create.(RECTバージョン.)
+BOOL CWindow::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, const RECT& rect, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
+
+	// RECTで指定されたサイズをx, y, iWidth, iHeightに変換.
+	return CWindow::Create(lpctszClassName, lpctszWindowName, dwStyle, rect.left, rect.top, rect.right - rect.left + 1, rect.bottom - rect.top + 1, hWndParent, hMenu, hInstance);	// CWindow::Createでウィンドウ作成.
+
+}
+
 // ウィンドウ作成関数Create.(ウィンドウクラス名省略バージョン.)
 BOOL CWindow::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
 
