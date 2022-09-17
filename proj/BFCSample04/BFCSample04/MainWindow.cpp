@@ -121,7 +121,12 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 	m_pCustomControl2 = new CCustomControl();	// newでCCustomControlオブジェクトを作成し, ポインタをm_pCustomControl2に格納.
 
 	// ウィンドウクラス名"Edit"のカスタムコントロール"Edit1"のウィンドウ作成.
-	m_pCustomControl2->Create(_T("Edit"), _T("Edit1"), WS_BORDER | ES_MULTILINE | ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL, 50, 350, 100, 100, hwnd, (HMENU)(WM_APP + 3), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"Edit"のCCustomControlウィンドウ"Edit1"作成.
+	RECT rc;	// RECT構造体rc.
+	rc.left = 50;		// 左50
+	rc.right = 150;		// 右150
+	rc.top = 350;		// 上350
+	rc.bottom = 450;	// 下450
+	m_pCustomControl2->Create(_T("Edit"), _T("Edit1"), WS_BORDER | ES_MULTILINE | ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL, rc, hwnd, (HMENU)(WM_APP + 3), lpCreateStruct->hInstance);	// Createでウィンドウクラス名"Edit"のCCustomControlウィンドウ"Edit1"作成.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.
