@@ -3,8 +3,18 @@
 #define __CUSTOM_CONTROL_H__
 
 // ヘッダのインクルード
+// 既定のヘッダ
+#include <string>	// std::string
 // 独自のヘッダ
 #include "Window.h"	// CWindow
+
+// マクロの定義
+// UNICODE切り替え
+#ifdef UNICODE
+#define tstring std::wstring
+#else
+#define tstring std::string
+#endif
 
 // カスタムコントロールクラスCCustomControl
 class CCustomControl : public CWindow {
@@ -24,6 +34,7 @@ class CCustomControl : public CWindow {
 		static LRESULT CALLBACK StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);	// スタティックウィンドウプロシージャStaticWindowProc.
 		// メンバ関数
 		virtual BOOL Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance);	// ウィンドウ作成関数Create.
+		virtual BOOL Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, const RECT& rect, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance);	// ウィンドウ作成関数Create(RECTバージョン).
 		virtual BOOL Destroy();	// ウィンドウ破棄関数Destroy
 		virtual LRESULT DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);	// ダイナミックウィンドウプロシージャDynamicWindowProc.
 		virtual int OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct);	// ウィンドウの作成が開始された時.

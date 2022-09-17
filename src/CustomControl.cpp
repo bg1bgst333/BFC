@@ -97,6 +97,14 @@ BOOL CCustomControl::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, D
 
 }
 
+// ウィンドウ作成関数Create(RECTバージョン).
+BOOL CCustomControl::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, const RECT& rect, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
+
+	// RECTで指定されたサイズをx, y, iWidth, iHeightに変換.
+	return CCustomControl::Create(lpctszClassName, lpctszWindowName, dwStyle, rect.left, rect.top, rect.right - rect.left + 1, rect.bottom - rect.top + 1, hWndParent, hMenu, hInstance);	// CCustomControl::Createでカスタムコントロールのウィンドウ作成.
+
+}
+
 // ウィンドウ破棄関数Destroy
 BOOL CCustomControl::Destroy() {
 
