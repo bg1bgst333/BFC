@@ -93,7 +93,12 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 	m_pButton = new CButtonCore();	// newでCButtonCoreオブジェクトを作成し, ポインタをm_pButtonに格納.
 
 	// ボタンコアコントロール"Button1"のウィンドウ作成.
-	m_pButton->Create(_T("Button1"), WS_BORDER, 50, 50, 100, 100, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでボタンコアコントロール"Button1"のウィンドウ作成.
+	RECT rc;	// RECT構造体rc.
+	rc.left = 50;		// 左50
+	rc.right = 150;		// 右150
+	rc.top = 50;		// 上50
+	rc.bottom = 150;	// 下150
+	m_pButton->Create(_T("Button1"), WS_BORDER, rc, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでボタンコアコントロール"Button1"のウィンドウ作成.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.

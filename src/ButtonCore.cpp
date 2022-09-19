@@ -9,3 +9,11 @@ BOOL CButtonCore::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, 
 	return CCustomControl::Create(_T("Button"), lpctszWindowName, dwStyle | BS_PUSHBUTTON, x, y, iWidth, iHeight, hWndParent, hMenu, hInstance);	// CCustomControl::Createにウィンドウクラス名"Button"を指定.
 
 }
+
+// ウィンドウ作成関数Create(RECTバージョン).
+BOOL CButtonCore::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, const RECT& rect, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
+
+	// ウィンドウクラス名には"Button"を指定.
+	return CCustomControl::Create(_T("Button"), lpctszWindowName, dwStyle | BS_PUSHBUTTON, rect, hWndParent, hMenu, hInstance);	// CCustomControl::Createにウィンドウクラス名"Button"を指定.
+
+}
