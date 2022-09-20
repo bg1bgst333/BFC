@@ -93,7 +93,12 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 	m_pStatic = new CStaticCore();	// newでCStaticCoreオブジェクトを作成し, ポインタをm_pStaticに格納.
 
 	// スタティックコアコントロール"Static1"のウィンドウ作成.
-	m_pStatic->Create(_T("Static1"), WS_BORDER | SS_SIMPLE, 50, 50, 100, 100, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでスタティックコアコントロール"Static1"のウィンドウ作成.
+	RECT rc;	// RECT構造体rc.
+	rc.left = 50;		// 左50
+	rc.right = 150;		// 右150
+	rc.top = 50;		// 上50
+	rc.bottom = 150;	// 下150
+	m_pStatic->Create(_T("Static1"), WS_BORDER | SS_SIMPLE, rc, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでスタティックコアコントロール"Static1"のウィンドウ作成.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.
