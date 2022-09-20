@@ -15,6 +15,7 @@ class CStaticCore : public CCustomControl {
 		// publicメンバ関数
 		// メンバ関数
 		virtual BOOL Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance);	// ウィンドウ作成関数Create.
+		virtual BOOL Create(LPCTSTR lpctszWindowName, DWORD dwStyle, const RECT& rect, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance);	// ウィンドウ作成関数Create(RECTバージョン).
 
 };
 
