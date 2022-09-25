@@ -20,6 +20,8 @@ class CBitmap {
 		// コンストラクタ・デストラクタ
 		CBitmap();	// コンストラクタCBitmap()
 		virtual ~CBitmap();	// デストラクタ~CBitmap()
+		// メンバ関数
+		virtual BOOL LoadBitmap(HINSTANCE hInstance, LPCTSTR lpctszResourceName);	// ビットマップリソースロード関数LoadBitmap.
 
 };
 

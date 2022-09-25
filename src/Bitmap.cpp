@@ -13,6 +13,24 @@ CBitmap::CBitmap() {
 // デストラクタ~CBitmap()
 CBitmap::~CBitmap() {
 
-	// とりあえず何もしない.
+	// メンバの終了処理.
+	if (m_hBitmap != NULL) {	// NULLでない.
+		::DeleteObject(m_hBitmap);	// DeleteObjectで破棄.
+		m_hBitmap = NULL;	// NULLをセット.
+	}
+
+}
+
+// ビットマップリソースロード関数LoadBitmap.
+BOOL CBitmap::LoadBitmap(HINSTANCE hInstance, LPCTSTR lpctszResourceName) {
+
+	// ビットマップリソースをロード.
+	m_hBitmap = ::LoadBitmap(hInstance, lpctszResourceName);	// LoadBitmapで指定のビットマップリソースをロード.
+	if (m_hBitmap != NULL) {	// NULLでない.
+		return TRUE;	// TRUEを返す.
+	}
+	else {	// NULL.
+		return FALSE;	// FALSEを返す.
+	}
 
 }
