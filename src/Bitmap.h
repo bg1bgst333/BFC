@@ -12,16 +12,23 @@ class CBitmap {
 	// publicメンバ
 	public:
 
-		// publicメンバ変数
-		// メンバ変数
-		HBITMAP m_hBitmap;	// HBITMAP型ビットマップハンドルm_hBitmap.
-
 		// publicメンバ関数
 		// コンストラクタ・デストラクタ
 		CBitmap();	// コンストラクタCBitmap()
 		virtual ~CBitmap();	// デストラクタ~CBitmap()
 		// メンバ関数
 		virtual BOOL LoadBitmap(HINSTANCE hInstance, LPCTSTR lpctszResourceName);	// ビットマップリソースロード関数LoadBitmap.
+
+		// publicメンバ演算子
+		// メンバ演算子
+		operator HBITMAP() const;	// HBITMAP演算子
+
+	// privateメンバ
+	private:
+
+		// privateメンバ変数
+		// メンバ変数
+		HBITMAP m_hBitmap;	// HBITMAP型ビットマップハンドルm_hBitmap.
 
 };
 
