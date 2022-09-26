@@ -34,3 +34,11 @@ BOOL CBitmap::LoadBitmap(HINSTANCE hInstance, LPCTSTR lpctszResourceName) {
 	}
 
 }
+
+// HBITMAP演算子
+CBitmap::operator HBITMAP() const {
+
+	// ビットマップハンドルを返す.
+	return m_hBitmap;	// m_hBitmapを返す.
+
+}

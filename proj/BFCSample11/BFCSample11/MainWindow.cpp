@@ -107,7 +107,7 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 	m_pBitmap = new CBitmap();	// newでCBitmapオブジェクトを作成し, ポインタをm_pBitmapに格納.
 	BOOL bRet = m_pBitmap->LoadBitmap(lpCreateStruct->hInstance, MAKEINTRESOURCE(IDB_BITMAP1));	// CBitmap::LoadBitmapでIDB_BITMAP1をロード.
 	TCHAR tszBuf[64] = { 0 };	// TCHARバッファtszBuf(長さ64)を{0}で初期化.
-	_stprintf(tszBuf, _T("m_pBitmap->m_hBitmap = 0x%08x"), (unsigned int)m_pBitmap->m_hBitmap);	// _stprintfでハンドルを文字列に変換.
+	_stprintf(tszBuf, _T("(HBITMAP)(*m_pBitmap) = 0x%08x"), (HBITMAP)(*m_pBitmap));	// _stprintfでハンドルを文字列に変換.
 	MessageBox(m_hWnd, tszBuf, _T("CBitmap"), MB_OK);	// MessageBoxでtszBufを表示.
 
 	// 親クラスのOnCreateを呼ぶ.
