@@ -101,14 +101,14 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 	rc.right = 150;		// 右150
 	rc.top = 50;		// 上50
 	rc.bottom = 150;	// 下150
-	m_pStatic->Create(_T("Static1"), WS_BORDER | SS_SIMPLE, rc, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでスタティックコアコントロール"Static1"のウィンドウ作成.
+	m_pStatic->Create(_T("Static1"), WS_BORDER | SS_BITMAP, rc, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでスタティックコアコントロール"Static1"のウィンドウ作成.
 
 	// ビットマップオブジェクトの作成とロード.
 	m_pBitmap = new CBitmap();	// newでCBitmapオブジェクトを作成し, ポインタをm_pBitmapに格納.
-	BOOL bRet = m_pBitmap->LoadBitmap(lpCreateStruct->hInstance, MAKEINTRESOURCE(IDB_BITMAP1));	// CBitmap::LoadBitmapでIDB_BITMAP1をロード.
-	TCHAR tszBuf[64] = { 0 };	// TCHARバッファtszBuf(長さ64)を{0}で初期化.
-	_stprintf(tszBuf, _T("(HBITMAP)(*m_pBitmap) = 0x%08x"), (HBITMAP)(*m_pBitmap));	// _stprintfでハンドルを文字列に変換.
-	MessageBox(m_hWnd, tszBuf, _T("CBitmap"), MB_OK);	// MessageBoxでtszBufを表示.
+	m_pBitmap->LoadBitmap(lpCreateStruct->hInstance, MAKEINTRESOURCE(IDB_BITMAP1));	// // CBitmap::LoadBitmapでIDB_BITMAP1をロード.
+
+	// スタティックコントロールにビットマップをセット.
+	m_pStatic->SetBitmap(*m_pBitmap);	// CStatic::SetBitmapで*m_pBitmapをセット.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.
