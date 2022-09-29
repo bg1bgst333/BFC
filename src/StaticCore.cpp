@@ -17,3 +17,11 @@ BOOL CStaticCore::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, const RECT& re
 	return CCustomControl::Create(_T("Static"), lpctszWindowName, dwStyle, rect, hWndParent, hMenu, hInstance);	// CCustomControl::Createにウィンドウクラス名"Static"を指定.
 
 }
+
+// ビットマップのセットSetBitmap.
+void CStaticCore::SetBitmap(HBITMAP hBitmap) {
+
+	// スタティックコントロールにビットマップをセット.
+	SendMessage(m_hWnd, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hBitmap);	// SendMessageのSTM_SETIMAGEでm_hWndにhBitmapをセット.
+
+}
