@@ -35,6 +35,20 @@ BOOL CBitmap::LoadBitmap(HINSTANCE hInstance, LPCTSTR lpctszResourceName) {
 
 }
 
+// ビットマップイメージファイルロード関数LoadImage.
+BOOL CBitmap::LoadImage(HINSTANCE hInstance, LPCTSTR lpctszFileName, UINT uType, int cxDesired, int cyDesired, UINT fuLoad) {
+
+	// ビットマップイメージファイルをロード.
+	m_hBitmap = (HBITMAP)::LoadImage(hInstance, lpctszFileName, uType, cxDesired, cyDesired, fuLoad);	// LoadImageで指定のビットマップイメージファイルをロード.
+	if (m_hBitmap != NULL) {	// NULLでない.
+		return TRUE;	// TRUEを返す.
+	}
+	else {	// NULL.
+		return FALSE;	// FALSEを返す.
+	}
+
+}
+
 // HBITMAP演算子
 CBitmap::operator HBITMAP() const {
 

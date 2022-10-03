@@ -18,6 +18,7 @@ class CBitmap {
 		virtual ~CBitmap();	// デストラクタ~CBitmap()
 		// メンバ関数
 		virtual BOOL LoadBitmap(HINSTANCE hInstance, LPCTSTR lpctszResourceName);	// ビットマップリソースロード関数LoadBitmap.
+		virtual BOOL LoadImage(HINSTANCE hInstance, LPCTSTR lpctszFileName, UINT uType, int cxDesired, int cyDesired, UINT fuLoad);	// ビットマップイメージファイルロード関数LoadImage.
 
 		// publicメンバ演算子
 		// メンバ演算子
