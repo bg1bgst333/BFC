@@ -105,7 +105,7 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 
 	// ビットマップオブジェクトの作成とロード.
 	m_pBitmap = new CBitmap();	// newでCBitmapオブジェクトを作成し, ポインタをm_pBitmapに格納.
-	m_pBitmap->LoadBitmap(lpCreateStruct->hInstance, MAKEINTRESOURCE(IDB_BITMAP1));	// // CBitmap::LoadBitmapでIDB_BITMAP1をロード.
+	m_pBitmap->LoadImage(lpCreateStruct->hInstance, _T("bitmap2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);	// CBitmap::LoadImageで"bitmap2.bmp"をロード.
 
 	// スタティックコントロールにビットマップをセット.
 	m_pStatic->SetBitmap(*m_pBitmap);	// CStatic::SetBitmapで*m_pBitmapをセット.
