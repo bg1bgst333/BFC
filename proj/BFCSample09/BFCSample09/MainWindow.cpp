@@ -9,3 +9,17 @@ BOOL CMainWindow::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, 
 	return CWindow::Create(_T("CMainWindow"), lpctszWindowName, dwStyle, x, y, iWidth, iHeight, hWndParent, hMenu, hInstance);	// CWindow::Createにウィンドウクラス名"CMainWindow"を指定.
 
 }
+
+// ウィンドウの描画を要求された時.
+void CMainWindow::OnPaint() {
+
+	// 変数の宣言.
+	HDC hDC;	// デバイスコンテキストハンドルhDC.
+	PAINTSTRUCT ps;	// PAINTSTRUCT構造体ps.
+
+	// 文字列の描画.
+	hDC = BeginPaint(m_hWnd, &ps);	// Win32APIのBeginPaintでhDCを取得.
+	TextOut(hDC, 0, 0, _T("BFCSample09"), (int)_tcslen(_T("BFCSample09")));	// Win32APIのTextOutで"BFCSample09"と描画.
+	EndPaint(m_hWnd, &ps);	// Win32APIのEndPaintで描画終了.
+
+}
