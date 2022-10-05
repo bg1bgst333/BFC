@@ -133,6 +133,19 @@ LRESULT CCustomControl::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
 			// 既定の処理へ向かう.
 			break;	// breakで抜けて, 既定の処理へ向かう.
 
+		// ウィンドウの描画を要求された時.
+		case WM_PAINT:
+
+			// WM_PAINTブロック
+			{
+
+				// OnPaintに任せる.
+				OnPaint();	// OnPaintを呼ぶ.
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
 
 		// それ以外の時.
 		default:
@@ -184,5 +197,19 @@ void CCustomControl::OnDestroy() {
 	if (m_mapWindowMap.find(m_hWnd) != m_mapWindowMap.end()) {	// findでみつかったら.
 		m_mapWindowMap.erase(m_hWnd);	// m_mapWindowMap.eraseで削除.
 	}
+
+}
+
+// ウィンドウの描画を要求された時.
+void CCustomControl::OnPaint() {
+
+	// 変数の宣言.
+	HDC hDC;	// デバイスコンテキストハンドルhDC.
+	PAINTSTRUCT ps;	// PAINTSTRUCT構造体ps.
+
+	// 文字列の描画.
+	hDC = BeginPaint(m_hWnd, &ps);	// Win32APIのBeginPaintでhDCを取得.
+	TextOut(hDC, 0, 0, _T("CCustomControl"), (int)_tcslen(_T("CCustomControl")));	// Win32APIのTextOutで"CCustomControl"と描画.
+	EndPaint(m_hWnd, &ps);	// Win32APIのEndPaintで描画終了.
 
 }
