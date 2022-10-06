@@ -4,7 +4,7 @@
 
 // ヘッダのインクルード
 // 独自のヘッダ
-#include "StaticCore.h"	// CStaticCore
+#include "Picture.h"	// CPicture
 #include "Bitmap.h"		// CBitmap
 
 // メインウィンドウクラスCMainWindow
@@ -14,7 +14,7 @@ class CMainWindow : public CWindow {
 	public:
 
 		// メンバ変数
-		CStaticCore* m_pStatic;	// CStaticCoreオブジェクトポインタm_pStatic.
+		CPicture* m_pPicture;	// CPictureオブジェクトポインタm_pPicture.
 		CBitmap* m_pBitmap;	// CBitmapオブジェクトポインタm_pBitmap.
 
 		// staticメンバ関数

@@ -144,6 +144,7 @@
     <ClCompile Include="..\..\..\src\Application.cpp" />
     <ClCompile Include="..\..\..\src\Bitmap.cpp" />
     <ClCompile Include="..\..\..\src\CustomControl.cpp" />
+    <ClCompile Include="..\..\..\src\Picture.cpp" />
     <ClCompile Include="..\..\..\src\StaticCore.cpp" />
     <ClCompile Include="..\..\..\src\Window.cpp" />
     <ClCompile Include="MainApplication.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\..\..\src\Bitmap.h" />
     <ClInclude Include="..\..\..\src\CustomControl.h" />
     <ClInclude Include="..\..\..\src\HandlerConditions.h" />
+    <ClInclude Include="..\..\..\src\Picture.h" />
     <ClInclude Include="..\..\..\src\StaticCore.h" />
     <ClInclude Include="..\..\..\src\Window.h" />
     <ClInclude Include="MainApplication.h" />
