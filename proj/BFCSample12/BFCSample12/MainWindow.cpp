@@ -24,7 +24,7 @@ BOOL CMainWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszMenuName) {
 CMainWindow::CMainWindow() {
 	
 	// メンバの初期化.
-	m_pStatic = NULL;	// m_pStaticをNULLで初期化.
+	m_pPicture = NULL;	// m_pPictureをNULLで初期化.
 	m_pBitmap = NULL;	// m_pBitmapをNULLで初期化.
 
 }
@@ -70,10 +70,10 @@ BOOL CMainWindow::DestroyChildren() {
 	BOOL bRet = FALSE;	// bRetをFALSEで初期化.
 
 	// 子ウィンドウの破棄.
-	if (m_pStatic != NULL) {	// NULLでなければ.
-		bRet = m_pStatic->Destroy();	// m_pStatic->Destroyでウィンドウを破棄.
-		delete m_pStatic;	// deleteでm_pStaticを解放.
-		m_pStatic = NULL;	// NULLをセット.
+	if (m_pPicture != NULL) {	// NULLでなければ.
+		bRet = m_pPicture->Destroy();	// m_pPicture->Destroyでウィンドウを破棄.
+		delete m_pPicture;	// deleteでm_pPictureを解放.
+		m_pPicture = NULL;	// NULLをセット.
 	}
 
 	// 破棄したらTRUEを返す.
@@ -89,23 +89,23 @@ BOOL CMainWindow::DestroyChildren() {
 // ウィンドウの作成が開始された時.
 int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 
-	// スタティックコアコントロールオブジェクトの作成.
-	m_pStatic = new CStaticCore();	// newでCStaticCoreオブジェクトを作成し, ポインタをm_pStaticに格納.
+	// ピクチャーコントロールオブジェクトの作成.
+	m_pPicture = new CPicture();	// newでCPictureオブジェクトを作成し, ポインタをm_pPictureに格納.
 
-	// スタティックコアコントロール"Static1"のウィンドウ作成.
+	// ピクチャーコントロールのウィンドウ作成.
 	RECT rc;	// RECT構造体rc.
 	rc.left = 50;		// 左50
 	rc.right = 150;		// 右150
 	rc.top = 50;		// 上50
 	rc.bottom = 150;	// 下150
-	m_pStatic->Create(_T("Static1"), WS_BORDER | SS_BITMAP, rc, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでスタティックコアコントロール"Static1"のウィンドウ作成.
+	m_pPicture->Create(_T(""), WS_BORDER | SS_BITMAP, rc, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでピクチャーコントロールのウィンドウ作成.
 
 	// ビットマップオブジェクトの作成とロード.
 	m_pBitmap = new CBitmap();	// newでCBitmapオブジェクトを作成し, ポインタをm_pBitmapに格納.
 	m_pBitmap->LoadImage(lpCreateStruct->hInstance, _T("bitmap1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);	// CBitmap::LoadImageで"bitmap1.bmp"をロード.
 
-	// スタティックコントロールにビットマップをセット.
-	m_pStatic->SetBitmap(*m_pBitmap);	// CStatic::SetBitmapで*m_pBitmapをセット.
+	// ピクチャーコントロールにビットマップをセット.
+	m_pPicture->SetBitmap(*m_pBitmap);	// m_pPicture->SetBitmapで*m_pBitmapをセット.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.
