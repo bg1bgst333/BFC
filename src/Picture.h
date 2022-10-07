@@ -13,8 +13,19 @@ class CPicture : public CStaticCore {
 	public:
 
 		// publicメンバ関数
+		// コンストラクタ・デストラクタ
+		CPicture();	// コンストラクタCPicture
+		virtual ~CPicture();	// デストラクタ~CPicture
 		// メンバ関数
 		virtual void OnPaint();	// ウィンドウの描画を要求された時.
+
+	// privateメンバ
+	private:
+
+		// privateメンバ変数
+		// メンバ変数
+		HDC m_hDC;	// HDC型デバイスコンテキストハンドルm_hDC.
+		HDC m_hMemDC;	// HDC型メモリデバイスコンテキストハンドルm_hMemDC.
 
 };
 
