@@ -18,6 +18,26 @@ CPicture::~CPicture() {
 
 }
 
+// ウィンドウ破棄関数Destroy
+BOOL CPicture::Destroy() {
+
+	// メモリデバイスコンテキストの破棄.
+	if (m_hMemDC != NULL) {	// NULLでない.
+		DeleteDC(m_hMemDC);	// DeleteDCでm_hMemDCを破棄.
+		m_hMemDC = NULL;	// NULLをセット.
+	}
+
+	// デバイスコンテキストの解放.
+	if (m_hDC != NULL) {	// NULLでない.
+		ReleaseDC(m_hWnd, m_hDC);	// ReleaseDCでm_hDCを解放.
+		m_hDC = NULL;	// NULLをセット.
+	}
+
+	// 親クラスのDestroyを呼ぶ.
+	return CStaticCore::Destroy();	// CStaticCore::Destroyを呼ぶ.
+
+}
+
 // ウィンドウの描画を要求された時.
 void CPicture::OnPaint() {
 
