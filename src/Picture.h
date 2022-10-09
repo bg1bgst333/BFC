@@ -17,6 +17,7 @@ class CPicture : public CStaticCore {
 		CPicture();	// コンストラクタCPicture
 		virtual ~CPicture();	// デストラクタ~CPicture
 		// メンバ関数
+		virtual BOOL Destroy();	// ウィンドウ破棄関数Destroy
 		virtual void OnPaint();	// ウィンドウの描画を要求された時.
 
 	// privateメンバ
