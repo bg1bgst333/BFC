@@ -18,6 +18,7 @@ class CPicture : public CStaticCore {
 		virtual ~CPicture();	// デストラクタ~CPicture
 		// メンバ関数
 		virtual BOOL Destroy();	// ウィンドウ破棄関数Destroy
+		virtual void SetBitmap(HBITMAP hBitmap);	// ビットマップのセットSetBitmap.
 		virtual int OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct);	// ウィンドウの作成が開始された時.
 		virtual void OnPaint();	// ウィンドウの描画を要求された時.
 
@@ -28,6 +29,8 @@ class CPicture : public CStaticCore {
 		// メンバ変数
 		HDC m_hDC;	// HDC型デバイスコンテキストハンドルm_hDC.
 		HDC m_hMemDC;	// HDC型メモリデバイスコンテキストハンドルm_hMemDC.
+		HBITMAP m_hBitmap;	// HBITMAP型ビットマップハンドルm_hBitmap.
+		HBITMAP m_hOldBitmap;	// HBITMAP型の以前のビットマップハンドルm_hOldBitmap.
 
 };
 
