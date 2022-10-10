@@ -38,6 +38,28 @@ BOOL CPicture::Destroy() {
 
 }
 
+// ウィンドウの作成が開始された時.
+int CPicture::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
+
+	// デバイスコンテキストの取得.
+	m_hDC = GetDC(hwnd);	// GetDCでこのウィンドウのデバイスコンテキストハンドルを取得.
+	if (m_hDC == NULL) {	// NULLなら失敗.
+		return -1;	// -1を返してウィンドウ作成失敗とする.
+	}
+
+	// メモリデバイスコンテキストの生成.
+	m_hMemDC = CreateCompatibleDC(m_hDC);	// CreateCompatibleDCでm_hDCに互換性のあるメモリデバイスコンテキストを生成.
+	if (m_hMemDC == NULL) {	// NULLなら失敗.
+		ReleaseDC(hwnd, m_hDC);	// ReleaseDCでm_hDCを解放.
+		m_hDC = NULL;	// NULLをセット.
+		return -2;	// -2を返してウィンドウ作成失敗とする.
+	}
+
+	// 親クラスのOnCreateを呼ぶ.
+	return CStaticCore::OnCreate(hwnd, lpCreateStruct);	// CStaticCore::OnCreateの値を返す.
+
+}
+
 // ウィンドウの描画を要求された時.
 void CPicture::OnPaint() {
 
