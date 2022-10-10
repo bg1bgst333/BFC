@@ -10,6 +10,8 @@ CPicture::CPicture() : CStaticCore() {
 	// メンバの初期化.
 	m_hDC = NULL;	// m_hDCをNULLで初期化.
 	m_hMemDC = NULL;	// m_hMemDCをNULLで初期化.
+	m_hBitmap = NULL;	// m_hBitmapをNULLで初期化.
+	m_hOldBitmap = NULL;	// m_hOldBitmapをNULLで初期化.
 
 }
 
@@ -20,6 +22,12 @@ CPicture::~CPicture() {
 
 // ウィンドウ破棄関数Destroy
 BOOL CPicture::Destroy() {
+
+	// 以前のビットマップハンドルに戻す.
+	if (m_hOldBitmap != NULL) {	// NULLでない.
+		SelectObject(m_hMemDC, m_hOldBitmap);	// SelectObjectでm_hMemDCでm_hOlbBitmapを選択.
+		m_hOldBitmap = NULL;	// NULLをセット.
+	}
 
 	// メモリデバイスコンテキストの破棄.
 	if (m_hMemDC != NULL) {	// NULLでない.
@@ -33,8 +41,28 @@ BOOL CPicture::Destroy() {
 		m_hDC = NULL;	// NULLをセット.
 	}
 
+	// ビットマップハンドルは外部のモノなので破棄せずNULLにするだけ.
+	if (m_hBitmap != NULL) {
+		m_hBitmap = NULL;	// NULLをセット.
+	}
+
 	// 親クラスのDestroyを呼ぶ.
 	return CStaticCore::Destroy();	// CStaticCore::Destroyを呼ぶ.
+
+}
+
+// ビットマップのセットSetBitmap.
+void CPicture::SetBitmap(HBITMAP hBitmap) {
+
+	// ビットマップハンドルの格納.
+	m_hBitmap = hBitmap;	// m_hBitmapにhBitmapを格納.
+
+	// ビットマップオブジェクトの選択.
+	HBITMAP hOld = NULL;
+	hOld = (HBITMAP)SelectObject(m_hMemDC, m_hBitmap);	// SelectObjectでm_hMemDCがm_hBitmapを選択.
+	if (m_hOldBitmap == NULL) {	// m_hOldBitmapがNULLの時.
+		m_hOldBitmap = hOld;	// SelectObjectの戻り値を格納,
+	}
 
 }
 
@@ -67,15 +95,26 @@ void CPicture::OnPaint() {
 	HDC hDC;	// デバイスコンテキストハンドルhDC.
 	PAINTSTRUCT ps;	// PAINTSTRUCT構造体ps.
 
-	// 文字列の描画.
+	// 描画の開始.
 	hDC = BeginPaint(m_hWnd, &ps);	// Win32APIのBeginPaintでhDCを取得.
+
+	// ビットマップの描画.
+	if (m_hBitmap != NULL) {	// NULLでなければ.
+		RECT rc = { 0 };	// クライアント領域rcを{0}で初期化.
+		GetClientRect(m_hWnd, &rc);	// GetClientRectでクライアント領域のRECTを取得.
+		BitBlt(hDC, 0, 0, rc.right - rc.left + 1, rc.bottom - rc.top + 1, m_hMemDC, 0, 0, SRCCOPY);	// BitBltでm_hMemDCをhDCに転送.
+	}
+
+	// 文字列の描画.
 	TextOut(hDC, 0, 0, _T("CPicture"), (int)_tcslen(_T("CPicture")));	// Win32APIのTextOutで"CPicture"と描画.
 	TCHAR tszBuf1[64] = { 0 };	// TCHARバッファtszBuf1(長さ64)を{0}で初期化.
 	_stprintf(tszBuf1, _T("m_hDC = 0x%08x"), m_hDC);	// _stprintfでm_hDCを文字列に変換.
-	TextOut(hDC, 0, 50, tszBuf1, (int)_tcslen(tszBuf1));	// Win32APIのTextOutでtszBuf1を描画.
+	TextOut(hDC, 0, 25, tszBuf1, (int)_tcslen(tszBuf1));	// Win32APIのTextOutでtszBuf1を描画.
 	TCHAR tszBuf2[64] = { 0 };	// TCHARバッファtszBuf2(長さ64)を{0}で初期化.
 	_stprintf(tszBuf2, _T("m_hMemDC = 0x%08x"), m_hMemDC);	// _stprintfでm_hMemDCを文字列に変換.
-	TextOut(hDC, 0, 100, tszBuf2, (int)_tcslen(tszBuf2));	// Win32APIのTextOutでtszBuf2を描画.
+	TextOut(hDC, 0, 50, tszBuf2, (int)_tcslen(tszBuf2));	// Win32APIのTextOutでtszBuf2を描画.
+
+	// 描画の終了.
 	EndPaint(m_hWnd, &ps);	// Win32APIのEndPaintで描画終了.
 
 }
