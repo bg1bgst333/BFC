@@ -13,10 +13,10 @@
 class CWindow;	// ウィンドウクラスCWindow
 
 // ハンドラの発生条件を格納する構造体HandlerConditions
-struct HandlerConditions{
+struct HandlerConditions {
 	UINT m_nID;	// リソースID
 	UINT m_nCode;	// 通知コード
-	int (CWindow:: * m_fpHandler)(WPARAM wParam, LPARAM lParam);	// CWindowクラスメンバのハンドラ関数へのポインタm_fpHandler.
+	int (CWindow::* m_fpHandler)(WPARAM wParam, LPARAM lParam);	// CWindowクラスメンバのハンドラ関数へのポインタm_fpHandler.
 };
 
 #endif
