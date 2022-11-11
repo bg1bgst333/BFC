@@ -343,6 +343,20 @@ LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			// 既定の処理へ向かう.
 			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
 
+		// 水平スクロールバーがスクロールされた時.
+		case WM_HSCROLL:	// 水平スクロールバーがスクロールされた時.(uMsgがWM_HSCROLLの時.)
+
+			// WM_HSCROLLブロック
+			{
+
+				// OnHScrollに任せる.
+				OnHScroll(LOWORD(wParam), HIWORD(wParam));	// OnHScrollに任せる.
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
+
 		// 垂直スクロールバーがスクロールされた時.
 		case WM_VSCROLL:	// 垂直スクロールバーがスクロールされた時.(uMsgがWM_VSCROLLの時.)
 
@@ -427,6 +441,124 @@ BOOL CWindow::OnCommand(WPARAM wParam, LPARAM lParam) {
 
 	// 処理していないのでFALSE.
 	return FALSE;	// returnでFALSEを返す.
+
+}
+
+// 水平方向スクロールバーイベント時.
+void CWindow::OnHScroll(UINT nSBCode, UINT nPos) {
+
+	// 水平方向スクロールバー情報を取得.
+	SCROLLINFO scrHorz = { 0 };	// 水平方向スクロール情報scrHorzを{0}で初期化.
+	scrHorz.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
+	scrHorz.fMask = SIF_PAGE | SIF_RANGE | SIF_POS;	// ページ, レンジ, 位置を取得.
+	GetScrollInfo(m_hWnd, SB_HORZ, &scrHorz);	// GetScrollInfoでscrHorzを取得.
+
+	// つまみの最大位置を計算.
+	int iMaxPos = scrHorz.nMax + 1 - scrHorz.nPage;	// セットした最大値 + 1が大きさで, そこからページ数を引くと, つまみの最大の位置.
+
+	// 通知コード処理
+	switch (nSBCode) {	// 通知コードが格納されているので, それで判定する.
+
+		// 1番左
+		case SB_LEFT:
+
+			// 1番左にセット.
+			scrHorz.nPos = scrHorz.nMin;	// 現在位置を1番左にセット.
+			break;	// 抜ける.
+
+		// 1番右
+		case SB_RIGHT:
+
+			// 1番右にセット.
+			scrHorz.nPos = scrHorz.nMax;	// 現在位置を1番右にセット.
+			break;	// 抜ける.
+
+		// 1列左
+		case SB_LINELEFT:
+
+			// 1列左に戻す.
+			if (scrHorz.nPos > scrHorz.nMin) {	// scrHorz.nPosがscrHorz.nMinより大きい場合.
+				scrHorz.nPos--;	// 1戻る.
+			}
+			break;	// 抜ける.
+
+		// 1列右
+		case SB_LINERIGHT:
+
+			// 1列右に進める.
+			if (scrHorz.nPos < iMaxPos) {	// scrHorz.nPosがiMaxPosより小さい場合.
+				scrHorz.nPos++;	// 1進む.
+			}
+			break;	// 抜ける.
+
+		// 1ページ左
+		case SB_PAGELEFT:
+
+			// SB_PAGELEFTブロック.
+			{
+
+				// 1ページ戻る.
+				int after = scrHorz.nPos - scrHorz.nPage;	// 現在位置から1ページ分引く.
+				if (after >= scrHorz.nMin) {	// 左端を超えてなければ.
+					scrHorz.nPos -= scrHorz.nPage;	// 1ページ分マイナス.
+				}
+				else {	// 左端を超えたら.
+					scrHorz.nPos = scrHorz.nMin;	// 最小値に.
+				}
+
+			}
+
+			// 抜ける.
+			break;	// breakで抜ける.
+
+		// 1ページ右
+		case SB_PAGERIGHT:
+
+			// SB_PAGERIGHTブロック.
+			{
+
+				// 1ページ進む.
+				int after = scrHorz.nPos + scrHorz.nPage;	// 現在位置から1ページ分足す.
+				if (after <= iMaxPos) {	// 右端を超えてなければ.
+					scrHorz.nPos += scrHorz.nPage;	// 1ページ分プラス.
+				}
+				else {	// 右端を超えたら.
+					scrHorz.nPos = scrHorz.nMax;	// 最大値に.
+				}
+
+			}
+
+			// 抜ける.
+			break;	// breakで抜ける.
+
+		// スクロールつまみが離された時.
+		case SB_THUMBPOSITION:
+
+			// SB_THUMBPOSITIONブロック.
+			{
+
+				// 離された位置をセット.
+				int before = scrHorz.nPos;	// 以前.
+				int after = nPos;	// 以後.
+				scrHorz.nPos = after;	// HIWORD(wParam)に離された位置が格納されているのでscrHorz.nPosにセット.
+
+			}
+
+			// 抜ける.
+			break;	// breakで抜ける.
+
+		// それ以外.
+		default:
+
+			// 抜ける.
+			break;	// breakで抜ける.
+
+	}
+
+	// scrHorz.nPosをhwndのSB_HORZにセット.
+	SetScrollInfo(m_hWnd, SB_HORZ, &scrHorz, TRUE);	// SetScrollInfoで現在のscrHorz.nPosをm_hWndにセット.
+	InvalidateRect(m_hWnd, NULL, TRUE);	// InvalidateRectで無効領域を作成.(NULLなので全体が無効領域.)
+	UpdateWindow(m_hWnd);	// UpdateWindowでウィンドウの更新.
 
 }
 

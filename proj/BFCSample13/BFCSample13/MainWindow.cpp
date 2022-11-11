@@ -78,6 +78,16 @@ BOOL CMainWindow::DestroyChildren() {
 // ウィンドウの作成が開始された時.
 int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 
+	// 水平方向スクロールバーの初期化.
+	SCROLLINFO scrHorz = { 0 };	// 水平方向スクロール情報scrHorzを{0}で初期化.
+	scrHorz.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
+	scrHorz.nMin = 0;	// 最小値は0.
+	scrHorz.nMax = 640 - 1;	// 最大値は639.
+	scrHorz.nPage = 100;	// ページサイズは100.
+	scrHorz.nPos = 0;	// 現在位置は0.
+	scrHorz.fMask = SIF_PAGE | SIF_RANGE | SIF_POS;	// ページ, レンジ, 位置をセット.
+	SetScrollInfo(hwnd, SB_HORZ, &scrHorz, TRUE);	// スクロール情報をセット.
+
 	// 垂直方向スクロールバーの初期化.
 	SCROLLINFO scrVert = { 0 };	// 垂直方向スクロール情報scrVertを{0}で初期化.
 	scrVert.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
@@ -108,16 +118,22 @@ void CMainWindow::OnPaint() {
 	HDC hDC;	// デバイスコンテキストハンドルhDC.
 	PAINTSTRUCT ps;	// PAINTSTRUCT構造体ps.
 
+	// 水平方向スクロールバー情報を取得.
+	SCROLLINFO scrHorz = { 0 };	// 水平方向スクロール情報scrHorzを{0}で初期化.
+	scrHorz.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
+	scrHorz.fMask = SIF_POS;	// 位置を取得.
+	GetScrollInfo(m_hWnd, SB_HORZ, &scrHorz);	// GetScrollInfoでscrHorzを取得.
+
 	// 垂直方向スクロールバー情報を取得.
 	SCROLLINFO scrVert = { 0 };	// 垂直方向スクロール情報scrVertを{0}で初期化.
 	scrVert.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
 	scrVert.fMask = SIF_POS;	// 位置を取得.
 	GetScrollInfo(m_hWnd, SB_VERT, &scrVert);	// GetScrollInfoでscrVertを取得.
 
-	// 垂直方向スクロールバーの位置の描画.
+	// 水平方向と垂直方向のスクロールバーの位置の描画.
 	hDC = BeginPaint(m_hWnd, &ps);	// Win32APIのBeginPaintでhDCを取得.
-	TCHAR tszPos[128] = { 0 };	// scrVert.nPosを文字列にしたものtszPos(長さ128)を{0}で初期化.
-	_stprintf(tszPos, _T("scrVert.nPos = %d"), scrVert.nPos);	// scrVert.nPosを文字列tszPosに変換.
+	TCHAR tszPos[128] = { 0 };	// scrHorz.nPosとscrVert.nPosを文字列にしたものtszPos(長さ128)を{0}で初期化.
+	_stprintf(tszPos, _T("scrHorz.nPos = %d, scrVert.nPos = %d"), scrHorz.nPos, scrVert.nPos);	// scrHorz.nPosとscrVert.nPosを文字列tszPosに変換.
 	TextOut(hDC, 100, 100, tszPos, (int)_tcslen(tszPos));	// TextOutでtszPosを描画.
 	EndPaint(m_hWnd, &ps);	// Win32APIのEndPaintで描画終了.
 
