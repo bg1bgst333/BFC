@@ -4,10 +4,10 @@
 
 // ヘッダのインクルード
 // 独自のヘッダ
-#include "StaticCore.h"	// CStaticCore
+#include "UserControl.h"	// CUserControl
 
 // ピクチャークラスCPicture
-class CPicture : public CStaticCore {
+class CPicture : public CUserControl {
 
 	// publicメンバ
 	public:
@@ -16,6 +16,8 @@ class CPicture : public CStaticCore {
 		// コンストラクタ・デストラクタ
 		CPicture();	// コンストラクタCPicture
 		virtual ~CPicture();	// デストラクタ~CPicture
+		// staticメンバ関数
+		static BOOL RegisterClass(HINSTANCE hInstance);	// ウィンドウクラス登録関数RegisterClass.(ウィンドウクラス名省略バージョン.)
 		// メンバ関数
 		virtual BOOL Destroy();	// ウィンドウ破棄関数Destroy
 		virtual void SetBitmap(HBITMAP hBitmap);	// ビットマップのセットSetBitmap.
