@@ -25,6 +25,7 @@ CMainWindow::CMainWindow() {
 
 	// メンバの初期化.
 	m_pPicture = NULL;	// m_pPictureをNULLで初期化.
+	m_pBitmap = NULL;	// m_pBitmapをNULLで初期化.
 
 }
 
@@ -75,6 +76,12 @@ BOOL CMainWindow::DestroyChildren() {
 		m_pPicture = NULL;	// NULLをセット.
 	}
 
+	// ビットマップオブジェクトの破棄.
+	if (m_pBitmap != NULL) {	// NULLでない.
+		delete m_pBitmap;	// deleteでm_pBitmapを破棄.
+		m_pBitmap = NULL;	// m_pBitmapにNULLをセット.
+	}
+
 	// 破棄したらTRUEを返す.
 	if (bRet) {	// TRUEなら.
 		return TRUE;	// TRUEを返す.
@@ -90,7 +97,38 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 
 	// ピクチャーコントロールのウィンドウ作成.
 	m_pPicture = new CPicture();	// newでCPictureオブジェクトを作成し, ポインタm_pPictureに格納.
-	m_pPicture->Create(_T("CPicture"), _T("BFCSample14"), WS_BORDER | WS_VSCROLL | SS_BITMAP, 50, 50, 400, 300, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでピクチャーコントロールのウィンドウ作成.
+	m_pPicture->Create(_T("Picture1"), WS_BORDER | WS_HSCROLL | WS_VSCROLL, 50, 50, 400, 300, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでピクチャーコントロールのウィンドウ作成.
+
+	// ビットマップオブジェクトの作成とロード.
+	m_pBitmap = new CBitmap();	// newでCBitmapオブジェクトを作成し, ポインタをm_pBitmapに格納.
+	m_pBitmap->LoadImage(lpCreateStruct->hInstance, _T("bitmap1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);	// CBitmap::LoadImageで"bitmap1.bmp"をロード.
+
+	// ビットマップオブジェクトのビットマップをセット.
+	m_pPicture->SetBitmap(*m_pBitmap);	// m_pPicture->SetBitmapで*m_pBitmapをセット.
+
+	// クライアント領域のRECTを取得.
+	RECT rc = { 0 };	// RECT型rcを{0}で初期化.
+	GetClientRect(m_pPicture->m_hWnd, &rc);	// ピクチャーのクライアント領域のRECTを取得.
+
+	// 水平方向スクロールバーの初期化.
+	SCROLLINFO scrHorz = { 0 };	// 水平方向スクロール情報scrHorzを{0}で初期化.
+	scrHorz.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
+	scrHorz.nMin = 0;	// 最小値は0.
+	scrHorz.nMax = 640 - 1;	// 最大値は639.
+	scrHorz.nPage = rc.right - rc.left;	// ページサイズはrc.right - rc.left.
+	scrHorz.nPos = 0;	// 現在位置は0.
+	scrHorz.fMask = SIF_PAGE | SIF_RANGE | SIF_POS;	// ページ, レンジ, 位置をセット.
+	SetScrollInfo(m_pPicture->m_hWnd, SB_HORZ, &scrHorz, TRUE);	// スクロール情報をセット.
+
+	// 垂直方向スクロールバーの初期化.
+	SCROLLINFO scrVert = { 0 };	// 垂直方向スクロール情報scrVertを{0}で初期化.
+	scrVert.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
+	scrVert.nMin = 0;	// 最小値は0.
+	scrVert.nMax = 480 - 1;	// 最大値は479.
+	scrVert.nPage = rc.bottom - rc.top;	// ページサイズはrc.bottom - rc.top.
+	scrVert.nPos = 0;	// 現在位置は0.
+	scrVert.fMask = SIF_PAGE | SIF_RANGE | SIF_POS;	// ページ, レンジ, 位置をセット.
+	SetScrollInfo(m_pPicture->m_hWnd, SB_VERT, &scrVert, TRUE);	// スクロール情報をセット.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.

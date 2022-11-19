@@ -28,6 +28,14 @@ BOOL CPicture::RegisterClass(HINSTANCE hInstance) {
 
 }
 
+// ウィンドウ作成関数Create.(ウィンドウクラス名省略バージョン.)
+BOOL CPicture::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
+
+	// ウィンドウクラス名は"CPicture".
+	return CUserControl::Create(_T("CPicture"), lpctszWindowName, dwStyle, x, y, iWidth, iHeight, hWndParent, hMenu, hInstance);	// CUserControl::Createにウィンドウクラス名"CPicture"を指定.
+
+}
+
 // ウィンドウ破棄関数Destroy
 BOOL CPicture::Destroy() {
 
