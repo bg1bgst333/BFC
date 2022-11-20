@@ -24,6 +24,7 @@ class CPicture : public CUserControl {
 		virtual void SetBitmap(HBITMAP hBitmap);	// ビットマップのセットSetBitmap.
 		virtual int OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct);	// ウィンドウの作成が開始された時.
 		virtual void OnPaint();	// ウィンドウの描画を要求された時.
+		virtual void OnHScroll(UINT nSBCode, UINT nPos);	// 水平方向スクロールバーイベント時.
 
 	// privateメンバ
 	private:
@@ -34,6 +35,7 @@ class CPicture : public CUserControl {
 		HDC m_hMemDC;	// HDC型メモリデバイスコンテキストハンドルm_hMemDC.
 		HBITMAP m_hBitmap;	// HBITMAP型ビットマップハンドルm_hBitmap.
 		HBITMAP m_hOldBitmap;	// HBITMAP型の以前のビットマップハンドルm_hOldBitmap.
+		int m_dx;	// 水平方向の変化量m_dx.
 
 };
 
