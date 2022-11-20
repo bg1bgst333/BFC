@@ -97,7 +97,7 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 
 	// ピクチャーコントロールのウィンドウ作成.
 	m_pPicture = new CPicture();	// newでCPictureオブジェクトを作成し, ポインタm_pPictureに格納.
-	m_pPicture->Create(_T("Picture1"), WS_BORDER | WS_HSCROLL | WS_VSCROLL, 50, 50, 400, 300, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでピクチャーコントロールのウィンドウ作成.
+	m_pPicture->Create(_T("Picture1"), WS_BORDER | WS_HSCROLL, 50, 50, 400, 300, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでピクチャーコントロールのウィンドウ作成.
 
 	// ビットマップオブジェクトの作成とロード.
 	m_pBitmap = new CBitmap();	// newでCBitmapオブジェクトを作成し, ポインタをm_pBitmapに格納.
@@ -119,16 +119,6 @@ int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 	scrHorz.nPos = 0;	// 現在位置は0.
 	scrHorz.fMask = SIF_PAGE | SIF_RANGE | SIF_POS;	// ページ, レンジ, 位置をセット.
 	SetScrollInfo(m_pPicture->m_hWnd, SB_HORZ, &scrHorz, TRUE);	// スクロール情報をセット.
-
-	// 垂直方向スクロールバーの初期化.
-	SCROLLINFO scrVert = { 0 };	// 垂直方向スクロール情報scrVertを{0}で初期化.
-	scrVert.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
-	scrVert.nMin = 0;	// 最小値は0.
-	scrVert.nMax = 480 - 1;	// 最大値は479.
-	scrVert.nPage = rc.bottom - rc.top;	// ページサイズはrc.bottom - rc.top.
-	scrVert.nPos = 0;	// 現在位置は0.
-	scrVert.fMask = SIF_PAGE | SIF_RANGE | SIF_POS;	// ページ, レンジ, 位置をセット.
-	SetScrollInfo(m_pPicture->m_hWnd, SB_VERT, &scrVert, TRUE);	// スクロール情報をセット.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.
