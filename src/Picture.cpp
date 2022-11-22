@@ -80,6 +80,34 @@ void CPicture::SetBitmap(HBITMAP hBitmap) {
 		m_hOldBitmap = hOld;	// SelectObjectの戻り値を格納,
 	}
 
+	// クライアント領域のRECTを取得.
+	RECT rc = { 0 };	// RECT型rcを{0}で初期化.
+	GetClientRect(m_hWnd, &rc);	// ピクチャーのクライアント領域のRECTを取得.
+
+	// ビットマップ情報の取得.
+	BITMAP bitmap = { 0 };	// BITMAP構造体変数bitmapを{0}で初期化.
+	GetObject(m_hBitmap, sizeof(BITMAP), &bitmap);	// GetObjectでbitmapを取得.
+
+	// 水平方向スクロールバーの初期化.
+	SCROLLINFO scrHorz = { 0 };	// 水平方向スクロール情報scrHorzを{0}で初期化.
+	scrHorz.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
+	scrHorz.nMin = 0;	// 最小値は0.
+	scrHorz.nMax = bitmap.bmWidth - 1;	// 最大値はbitmap.bmWidth - 1.
+	scrHorz.nPage = rc.right - rc.left;	// ページサイズはrc.right - rc.left.
+	scrHorz.nPos = 0;	// 現在位置は0.
+	scrHorz.fMask = SIF_PAGE | SIF_RANGE | SIF_POS;	// ページ, レンジ, 位置をセット.
+	SetScrollInfo(m_hWnd, SB_HORZ, &scrHorz, TRUE);	// スクロール情報をセット.
+
+	// 垂直方向スクロールバーの初期化.
+	SCROLLINFO scrVert = { 0 };	// 垂直方向スクロール情報scrVertを{0}で初期化.
+	scrVert.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
+	scrVert.nMin = 0;	// 最小値は0.
+	scrVert.nMax = bitmap.bmHeight - 1;	// 最大値はbitmap.bmHeight - 1.
+	scrVert.nPage = rc.bottom - rc.top;	// ページサイズはrc.bottom - rc.top.
+	scrVert.nPos = 0;	// 現在位置は0.
+	scrVert.fMask = SIF_PAGE | SIF_RANGE | SIF_POS;	// ページ, レンジ, 位置をセット.
+	SetScrollInfo(m_hWnd, SB_VERT, &scrVert, TRUE);	// スクロール情報をセット.
+
 }
 
 // ウィンドウの作成が開始された時.
@@ -115,6 +143,7 @@ void CPicture::OnPaint() {
 		GetClientRect(m_hWnd, &rcClient);	// GetClientRectで現在のクライアント領域のRECTであるrcClientを取得.
 		RECT rcUpdate = { 0 };	// 更新領域rcUpdateを{0}で初期化.
 		GetUpdateRect(m_hWnd, &rcUpdate, FALSE);	// GetUpdateRectで更新領域rcUpdateを取得.
+
 		// スクロール情報の取得.
 		SCROLLINFO siHorz = { 0 };	// 水平方向スクロール情報siHorz.
 		siHorz.cbSize = sizeof(SCROLLINFO);	// sizeof(SCROLLINFO)
@@ -138,7 +167,12 @@ void CPicture::OnPaint() {
 		else {	// dxが0以下.
 			x1 = siHorz.nPos;	// x1は位置.
 		}
-		y1 = siVert.nPos;	// y1は位置.
+		if (m_dy > 0) {	// m_dyがプラス.
+			y1 = siVert.nPage + siVert.nPos - (rcUpdate.bottom - rcUpdate.top);	// y1はページ数 + 位置 - 1 - (再描画する範囲).
+		}
+		else {	// m_dyが0以下.
+			y1 = siVert.nPos;	// y1は位置.
+		}
 		BitBlt(hDC, rcUpdate.left, rcUpdate.top, rcUpdate.right - rcUpdate.left, rcUpdate.bottom - rcUpdate.top, m_hMemDC, x1, y1, SRCCOPY);	// BitBltで転送.
 
 		// 描画終了.
@@ -294,5 +328,153 @@ void CPicture::OnHScroll(UINT nSBCode, UINT nPos) {
 	InvalidateRect(m_hWnd, &rcInvalidate, FALSE);	// InvalidateRectで無効領域rcInvalidate作成.
 	// ウィンドウの更新.
 	UpdateWindow(m_hWnd);	// UpdateWinowでhwndの更新.
+
+}
+
+// 垂直方向スクロールバーイベント時.
+void CPicture::OnVScroll(UINT nSBCode, UINT nPos) {
+
+	// 垂直方向スクロールバー情報を取得.
+	SCROLLINFO scrVert = { 0 };	// 垂直方向スクロール情報scrVertを{0}で初期化.
+	scrVert.cbSize = sizeof(SCROLLINFO);	// sizeofで構造体サイズ指定.
+	scrVert.fMask = SIF_PAGE | SIF_RANGE | SIF_POS;	// ページ, レンジ, 位置を取得.
+	GetScrollInfo(m_hWnd, SB_VERT, &scrVert);	// GetScrollInfoでscrVertを取得.
+
+	// つまみの最大位置を計算.
+	int iMaxPos = scrVert.nMax + 1 - scrVert.nPage;	// セットした最大値 + 1が大きさで, そこからページ数を引くと, つまみの最大の位置.
+
+	// 変化量を0にリセット.
+	m_dy = 0;	// m_dyを0にリセット.
+
+	// 通知コード処理
+	switch (nSBCode) {	// nSBCodeに行われた操作の通知コードが格納されているので, それで判定する.
+
+		// 1番上
+		case SB_TOP:
+
+			// 1番上にセット.
+			scrVert.nPos = scrVert.nMin;	// 現在位置を1番上にセット.
+			break;	// 抜ける.
+
+		// 1番下
+		case SB_BOTTOM:
+
+			// 1番下にセット.
+			scrVert.nPos = scrVert.nMax;	// 現在位置を1番下にセット.
+			break;	// 抜ける.
+
+		// 1列上
+		case SB_LINEUP:
+
+			// 1列上に戻す.
+			if (scrVert.nPos > scrVert.nMin) {	// scrVert.nPosがscrVert.nMinより大きい場合.
+				m_dy = -1;	// 変化量-1.
+				scrVert.nPos--;	// 1戻る.
+			}
+			break;	// 抜ける.
+
+		// 1列下
+		case SB_LINEDOWN:
+
+			// 1列下に進める.
+			if (scrVert.nPos < iMaxPos) {	// scrVert.nPosがiMaxPosより小さい場合.
+				m_dy = 1;	// 変化量1.
+				scrVert.nPos++;	// 1進む.
+			}
+			break;	// 抜ける.
+
+		// 1ページ上
+		case SB_PAGEUP:
+
+			// SB_PAGEUPブロック.
+			{
+
+				// 1ページ戻る.
+				int after = scrVert.nPos - scrVert.nPage;	// 現在位置から1ページ分引く.
+				if (after >= scrVert.nMin) {	// 下限を超えてなければ.
+					m_dy = -1 * scrVert.nPage;	// 1ページ分マイナス.
+					scrVert.nPos -= scrVert.nPage;	// 1ページ分マイナス.
+				}
+				else {	// 下限を超えたら.
+					m_dy = -1 * (scrVert.nPos - scrVert.nMin);	// 現在位置から最小値までの差に-1をかけて変化量とする.
+					scrVert.nPos = scrVert.nMin;	// 最小値に.
+				}
+
+			}
+
+			// 抜ける.
+			break;	// breakで抜ける.
+
+		// 1ページ下
+		case SB_PAGEDOWN:
+
+			// SB_PAGEDOWNブロック.
+			{
+
+				// 1ページ進む.
+				int after = scrVert.nPos + scrVert.nPage;	// 現在位置から1ページ分足す.
+				if (after <= iMaxPos) {	// 上限を超えてなければ.
+					m_dy = scrVert.nPage;	// 1ページ分プラス.
+					scrVert.nPos += scrVert.nPage;	// 1ページ分プラス.
+				}
+				else {	// 上限を超えたら.
+					m_dy = iMaxPos - scrVert.nPos;	// iMaxPosから現在位置までの差を変化量とする.
+					scrVert.nPos = scrVert.nMax;	// 最大値に.
+				}
+
+			}
+
+			// 抜ける.
+			break;	// breakで抜ける.
+
+		// スクロールつまみが離された時.
+		case SB_THUMBPOSITION:
+
+			// SB_THUMBPOSITIONブロック.
+			{
+
+				// 離された位置をセット.
+				int before = scrVert.nPos;	// 以前.
+				int after = nPos;	// 以後.
+				m_dy = after - before;	// 変化量はafterが大きいと+, beforeが大きいと-.
+				scrVert.nPos = after;	// HIWORD(wParam)に離された位置が格納されているのでscrVert.nPosにセット.
+
+			}
+
+			// 抜ける.
+			break;	// breakで抜ける.
+
+		// それ以外.
+		default:
+
+			// 抜ける.
+			break;	// breakで抜ける.
+
+	}
+
+	// scrVert.nPosをhwndのSB_VERTにセット.
+	SetScrollInfo(m_hWnd, SB_VERT, &scrVert, TRUE);	// SetScrollInfoで現在のscrVert.nPosをm_hWndにセット.
+	// クライアント領域のスクロール.
+	ScrollWindow(m_hWnd, 0, -m_dy, NULL, NULL);	// ScrollWindowで-m_dy分スクロール.
+	// 無効領域の計算.
+	RECT rcClient = { 0 };	// クライアント領域rcClientを{0}で初期化.
+	GetClientRect(m_hWnd, &rcClient);	// GetClientRectで現在のクライアント領域のRECTであるrcClientを取得.
+	RECT rcInvalidate = { 0 };	// 無効領域rcInvalidateを{0}で初期化.
+	if (m_dy < 0) {	// m_dyがマイナスの時.
+		rcInvalidate.left = rcClient.left;	// 0.
+		rcInvalidate.top = rcClient.top;	// 0.
+		rcInvalidate.right = rcClient.right;	// 横.
+		rcInvalidate.bottom = -m_dy;	// 上から-m_dy(プラス)
+	}
+	else {	// dyが0かプラスの時.
+		rcInvalidate.left = rcClient.left;	// 0.
+		rcInvalidate.top = rcClient.bottom - m_dy;	// 下から-m_dy(マイナス)
+		rcInvalidate.right = rcClient.right;	// 横.
+		rcInvalidate.bottom = rcClient.bottom;	// 縦.
+	}
+	// 無効領域の作成.
+	InvalidateRect(m_hWnd, &rcInvalidate, FALSE);	// InvalidateRectで無効領域rcInvalidate作成.
+	// ウィンドウの更新.
+	UpdateWindow(m_hWnd);	// UpdateWinowでm_hWndの更新.
 
 }
