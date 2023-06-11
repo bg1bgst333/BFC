@@ -146,7 +146,7 @@ BOOL CWindow::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dw
 BOOL CWindow::Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, const RECT& rect, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
 
 	// RECTで指定されたサイズをx, y, iWidth, iHeightに変換.
-	return CWindow::Create(lpctszClassName, lpctszWindowName, dwStyle, rect.left, rect.top, rect.right - rect.left + 1, rect.bottom - rect.top + 1, hWndParent, hMenu, hInstance);	// CWindow::Createでウィンドウ作成.
+	return CWindow::Create(lpctszClassName, lpctszWindowName, dwStyle, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, hWndParent, hMenu, hInstance);	// CWindow::Createでウィンドウ作成.
 
 }
 
@@ -299,6 +299,20 @@ LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			// 既定の処理へ向かう.
 			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
 
+		// ウィンドウのサイズが変更された時.
+		case WM_SIZE:
+
+			// WM_SIZEブロック
+			{
+
+				// OnSizeに任せる.
+				OnSize((UINT)wParam, LOWORD(lParam), HIWORD(lParam));	// OnSizeに任せる.
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
+
 		// ウィンドウの描画を要求された時.
 		case WM_PAINT:
 
@@ -405,6 +419,11 @@ void CWindow::OnDestroy() {
 
 	// 終了メッセージの送信.
 	PostQuitMessage(0);	// PostQuitMessageで終了コードを0としてWM_QUITメッセージを送信.
+
+}
+
+// ウィンドウのサイズが変更された時.
+void CWindow::OnSize(UINT nType, int cx, int cy) {
 
 }
 
