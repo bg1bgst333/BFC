@@ -265,6 +265,14 @@ void CWindow::SetWindowText(LPCTSTR lpctszString) {
 
 }
 
+// ウィンドウの位置とサイズ変更.
+void CWindow::MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint) {
+
+	// 指定された位置とサイズに変更する.
+	::MoveWindow(m_hWnd, x, y, nWidth, nHeight, bRepaint);	// Win32APIのMoveWindowで指定の位置とサイズをセット.
+
+}
+
 // ダイナミックウィンドウプロシージャDynamicWindowProc.
 LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 

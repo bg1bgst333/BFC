@@ -5,12 +5,16 @@
 // ヘッダのインクルード
 // 独自のヘッダ
 #include "Window.h"	// CWindow
+#include "EditCore.h"	// CEditCore
 
 // メインウィンドウクラスCMainWindow
 class CMainWindow : public CWindow {
 
 	// publicメンバ
 	public:
+
+		// メンバ変数
+		CEditCore* m_pEdit;	// CEditCoreオブジェクトポインタm_pEdit.
 
 		// staticメンバ関数
 		static BOOL RegisterClass(HINSTANCE hInstance);	// ウィンドウクラス登録関数RegisterClass.
