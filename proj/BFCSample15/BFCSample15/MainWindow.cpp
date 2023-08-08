@@ -23,6 +23,9 @@ BOOL CMainWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszMenuName) {
 // コンストラクタCMainWindow()
 CMainWindow::CMainWindow() {
 
+	// メンバの初期化.
+	m_pEdit = NULL;	// m_pEditをNULLで初期化.
+
 }
 
 // デストラクタ~CMainWindow()
@@ -65,6 +68,13 @@ BOOL CMainWindow::DestroyChildren() {
 	// 変数の初期化.
 	BOOL bRet = FALSE;	// bRetをFALSEで初期化.
 
+	// 子ウィンドウの破棄.
+	if (m_pEdit != NULL) {	// NULLでなければ.
+		bRet = m_pEdit->Destroy();	// m_pEdit->Destroyでウィンドウを破棄.
+		delete m_pEdit;	// deleteでm_pEditを解放.
+		m_pEdit = NULL;	// NULLをセット.
+	}
+
 	// 破棄したらTRUEを返す.
 	if (bRet) {	// TRUEなら.
 		return TRUE;	// TRUEを返す.
@@ -77,6 +87,17 @@ BOOL CMainWindow::DestroyChildren() {
 
 // ウィンドウの作成が開始された時.
 int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
+
+	// エディットコアコントロールオブジェクトの作成.
+	m_pEdit = new CEditCore();	// newでCEditCoreオブジェクトを作成し, ポインタをm_pEditに格納.
+
+	// エディットコアコントロールのウィンドウ作成.
+	RECT rc;	// RECT構造体rc.
+	rc.left = 50;		// 左50
+	rc.right = 150;		// 右150
+	rc.top = 50;		// 上50
+	rc.bottom = 150;	// 下150
+	m_pEdit->Create(_T(""), WS_HSCROLL | WS_VSCROLL | ES_MULTILINE | ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL, rc, hwnd, (HMENU)(WM_APP + 1), lpCreateStruct->hInstance);	// Createでエディットコアコントロールのウィンドウ作成.
 
 	// 親クラスのOnCreateを呼ぶ.
 	return CWindow::OnCreate(hwnd, lpCreateStruct);	// CWindow::OnCreateを呼び, 戻り値を返す.
@@ -93,6 +114,11 @@ void CMainWindow::OnDestroy() {
 
 // ウィンドウのサイズが変更された時.
 void CMainWindow::OnSize(UINT nType, int cx, int cy) {
+
+	// エディットボックスのサイズをメインウィンドウのクライアント領域に合わせる.
+	if (m_pEdit != NULL) {	// NULLでない場合.
+		m_pEdit->MoveWindow(0, 0, cx, cy);	// m_pEdit->MoveWindowにcx, cyを指定.
+	}
 
 	// 引数をキャプションに表示.
 	TCHAR tszSize[1024] = { 0 };	// tszSize(長さ1024)を{0}で初期化.

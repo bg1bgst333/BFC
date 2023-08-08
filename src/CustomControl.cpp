@@ -204,12 +204,12 @@ void CCustomControl::OnDestroy() {
 void CCustomControl::OnPaint() {
 
 	// 変数の宣言.
-	HDC hDC;	// デバイスコンテキストハンドルhDC.
-	PAINTSTRUCT ps;	// PAINTSTRUCT構造体ps.
+	//HDC hDC;	// デバイスコンテキストハンドルhDC.
+	//PAINTSTRUCT ps;	// PAINTSTRUCT構造体ps.
 
 	// 文字列の描画.
-	hDC = BeginPaint(m_hWnd, &ps);	// Win32APIのBeginPaintでhDCを取得.
-	TextOut(hDC, 0, 0, _T("CCustomControl"), (int)_tcslen(_T("CCustomControl")));	// Win32APIのTextOutで"CCustomControl"と描画.
-	EndPaint(m_hWnd, &ps);	// Win32APIのEndPaintで描画終了.
+	//hDC = BeginPaint(m_hWnd, &ps);	// Win32APIのBeginPaintでhDCを取得.
+	//TextOut(hDC, 0, 0, _T("CCustomControl"), (int)_tcslen(_T("CCustomControl")));	// Win32APIのTextOutで"CCustomControl"と描画.
+	//EndPaint(m_hWnd, &ps);	// Win32APIのEndPaintで描画終了.
 
 }

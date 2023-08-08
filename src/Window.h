@@ -52,6 +52,7 @@ class CWindow {
 		virtual void GetWindowText(tstring& rString) const;	// テキストを取得.(tstringの参照バージョン.)
 		virtual int GetWindowTextLength() const;	// テキストの長さを取得.
 		virtual void SetWindowText(LPCTSTR lpctszString);	// テキストの設定.
+		virtual void MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint = TRUE);	// ウィンドウの位置とサイズ変更.
 		virtual LRESULT DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);	// ダイナミックウィンドウプロシージャDynamicWindowProc
 		virtual int OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct);	// ウィンドウの作成が開始された時.
 		virtual void OnDestroy();	// ウィンドウが破棄された時.
