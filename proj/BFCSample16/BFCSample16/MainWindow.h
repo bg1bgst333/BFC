@@ -32,6 +32,7 @@ class CMainWindow : public CWindow {
 		virtual void OnSize(UINT nType, int cx, int cy);	// ウィンドウのサイズが変更された時.
 		virtual int OnClose();	// ウィンドウが閉じられる時.
 		int OnFileSave(WPARAM wParam, LPARAM lParam);	// Saveが選択された時.
+		int OnFileOpen(WPARAM wParam, LPARAM lParam);	// Openが選択された時.
 
 };
 
