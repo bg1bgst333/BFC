@@ -1,6 +1,9 @@
 // ヘッダのインクルード
 // 既定のヘッダ
 #include <stdio.h>	// C標準入出力
+#include <string>	// std::string
+#include <tchar.h>	// TCHAR型
+
 // 独自のヘッダ
 #include "MainWindow.h"	// CMainWindow
 extern "C" {	// C言語として解釈する.
@@ -92,7 +95,8 @@ BOOL CMainWindow::DestroyChildren() {
 int CMainWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
 
 	// メニューハンドラの追加.
-	AddCommandHandler(ID_FILE_SAVE, 0, (int(CWindow::*)(WPARAM, LPARAM))&CMainWindow::OnFileSave);	// AddCommandHandlerでID_FILE_SAVEに対するハンドラCMainWindow::OnFileSaveを登録.
+	AddCommandHandler(ID_FILE_SAVE, 0, (int(CWindow::*)(WPARAM, LPARAM)) & CMainWindow::OnFileSave);	// AddCommandHandlerでID_FILE_SAVEに対するハンドラCMainWindow::OnFileSaveを登録.
+	AddCommandHandler(ID_FILE_OPEN, 0, (int(CWindow::*)(WPARAM, LPARAM)) & CMainWindow::OnFileOpen);	// AddCommandHandlerでID_FILE_OPENに対するハンドラCMainWindow::OnFileOpenを登録.
 
 	// エディットコアコントロールオブジェクトの作成.
 	m_pEdit = new CEditCore();	// newでCEditCoreオブジェクトを作成し, ポインタをm_pEditに格納.
@@ -115,6 +119,7 @@ void CMainWindow::OnDestroy() {
 
 	// メニューハンドラの削除.
 	DeleteCommandHandler(ID_FILE_SAVE, 0);	// DeleteCommandHandlerでID_FILE_SAVEのハンドラを削除.
+	DeleteCommandHandler(ID_FILE_OPEN, 0);	// DeleteCommandHandlerでID_FILE_OPENのハンドラを削除.
 
 	// CWindowのOnDestroyを呼ぶ.
 	CWindow::OnDestroy();	// CWindow::OnDestroyを呼ぶ.
@@ -168,6 +173,35 @@ int CMainWindow::OnFileSave(WPARAM wParam, LPARAM lParam) {
 
 	// メッセージボックスを表示.
 	MessageBox(NULL, _T("Save"), _T("BFCSample16"), MB_OK);	// MessageBoxで"Save"と表示.
+
+	// 0を返す.
+	return 0;	// 処理したので0.
+
+}
+
+// Openが選択された時.
+int CMainWindow::OnFileOpen(WPARAM wParam, LPARAM lParam) {
+
+	// "test.txt"のサイズを取得.
+	size_t file_size = get_file_size("test.txt");	// get_file_sizeで"test.txt"のサイズfile_sizeを取得.
+
+	// file_sizeをchar型文字配列に変換.
+	char file_size_str[32] = { 0 };	// char文字配列file_size_str(長さ32)を{0}で初期化.
+	sprintf(file_size_str, "%d", file_size);	// sprintfでfile_sizeをfile_size_strに変換.
+
+	// マルチバイト文字列からワイド文字列へ変換.
+	int iBufLen = MultiByteToWideChar(CP_ACP, 0, file_size_str, -1, NULL, 0);	// まずは長さを取得.
+	wchar_t* pwszBuf = new wchar_t[iBufLen];	// iBufLenのwchar_t型バッファを確保.
+	MultiByteToWideChar(CP_ACP, 0, file_size_str, -1, pwszBuf, iBufLen);	// 変換.
+
+	// file_sizeを表示.
+	wchar_t pwszFileSize[64] = { 0 };	// pwszFileSizeを{0}で初期化.
+	wcscat(pwszFileSize, _T("file_size = "));	// "file_size = "を連結.
+	wcscat(pwszFileSize, pwszBuf);	// pwszBufを連結.
+	MessageBox(NULL, pwszFileSize, _T("BFCSample16"), MB_OK);	// MessageBoxでpwszFileSizeを表示.
+
+	// メモリ解放.
+	delete[] pwszBuf;	// delete[]でpwszBufの解放.
 
 	// 0を返す.
 	return 0;	// 処理したので0.
