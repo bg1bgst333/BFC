@@ -185,23 +185,23 @@ int CMainWindow::OnFileOpen(WPARAM wParam, LPARAM lParam) {
 	// "test.txt"のサイズを取得.
 	size_t file_size = get_file_size("test.txt");	// get_file_sizeで"test.txt"のサイズfile_sizeを取得.
 
-	// file_sizeをchar型文字配列に変換.
-	char file_size_str[32] = { 0 };	// char文字配列file_size_str(長さ32)を{0}で初期化.
-	sprintf(file_size_str, "%d", file_size);	// sprintfでfile_sizeをfile_size_strに変換.
+	// バッファの確保.
+	char* pszBuf = new char[file_size + 1];	// newで(file_size + 1)分のメモリ確保.
+
+	// ファイル読み込み.
+	scan_file_text_cstdio("test.txt", pszBuf);	// scan_file_text_cstdioで読み込み.
 
 	// マルチバイト文字列からワイド文字列へ変換.
-	int iBufLen = MultiByteToWideChar(CP_ACP, 0, file_size_str, -1, NULL, 0);	// まずは長さを取得.
+	int iBufLen = MultiByteToWideChar(CP_ACP, 0, pszBuf, -1, NULL, 0);	// まずは長さを取得.
 	wchar_t* pwszBuf = new wchar_t[iBufLen];	// iBufLenのwchar_t型バッファを確保.
-	MultiByteToWideChar(CP_ACP, 0, file_size_str, -1, pwszBuf, iBufLen);	// 変換.
+	MultiByteToWideChar(CP_ACP, 0, pszBuf, -1, pwszBuf, iBufLen);	// 変換.
 
-	// file_sizeを表示.
-	wchar_t pwszFileSize[64] = { 0 };	// pwszFileSizeを{0}で初期化.
-	wcscat(pwszFileSize, _T("file_size = "));	// "file_size = "を連結.
-	wcscat(pwszFileSize, pwszBuf);	// pwszBufを連結.
-	MessageBox(NULL, pwszFileSize, _T("BFCSample16"), MB_OK);	// MessageBoxでpwszFileSizeを表示.
+	// エディットコントロールにセット.
+	m_pEdit->SetWindowText(pwszBuf);	// m_pEdit->SetWindowTextでテキスト設定.
 
 	// メモリ解放.
 	delete[] pwszBuf;	// delete[]でpwszBufの解放.
+	delete[] pszBuf;	// delete[]でpszBufの解放.	
 
 	// 0を返す.
 	return 0;	// 処理したので0.

@@ -11,5 +11,6 @@
 /* 関数のプロトタイプ宣言 */
 int print_file_text_cstdio(const char* path, const char* text);	/* 関数print_file_text_cstdioの宣言 */
 size_t get_file_size(const char* path);	/* 関数get_file_sizeの宣言. */
+int scan_file_text_cstdio(const char* path, char* text);	/* 関数scan_file_text_cstdioの宣言. */
 
 #endif
