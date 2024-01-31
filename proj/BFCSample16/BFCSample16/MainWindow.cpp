@@ -166,7 +166,7 @@ int CMainWindow::OnFileSave(WPARAM wParam, LPARAM lParam) {
 	WideCharToMultiByte(CP_ACP, 0, wstrEditText.c_str(), -1, pszBuf, iBufLen, NULL, NULL);	// 変換.
 
 	// "test.txt"にファイル出力.
-	print_file_text_cstdio("test.txt", pszBuf);	// print_file_text_cstdioでpszBufを"test.txt"に出力.
+	put_file_text_cstdio("test.txt", pszBuf);	// put_file_text_cstdioでpszBufを"test.txt"に出力.
 
 	// メモリ解放.
 	delete[] pszBuf;	// delete[]でpszBufの解放.
