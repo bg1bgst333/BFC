@@ -13,5 +13,6 @@ int print_file_text_cstdio(const char* path, const char* text);	/* ŠÖ”print_fil
 size_t get_file_size(const char* path);	/* ŠÖ”get_file_size‚ÌéŒ¾. */
 int scan_file_text_cstdio(const char* path, char* text);	/* ŠÖ”scan_file_text_cstdio‚ÌéŒ¾. */
 int put_file_text_cstdio(const char* path, const char* text);	/* ŠÖ”put_file_text_cstdio‚ÌéŒ¾. */
+char* get_file_text_cstdio(const char* path, char* text, size_t buf_size);	/* ŠÖ”get_file_text_cstdio‚ÌéŒ¾. */
 
 #endif
