@@ -189,7 +189,7 @@ int CMainWindow::OnFileOpen(WPARAM wParam, LPARAM lParam) {
 	char* pszBuf = new char[file_size + 1];	// newで(file_size + 1)分のメモリ確保.
 
 	// ファイル読み込み.
-	scan_file_text_cstdio("test.txt", pszBuf);	// scan_file_text_cstdioで読み込み.
+	get_file_text_cstdio("test.txt", pszBuf, file_size + 1);	// get_file_text_cstdioで読み込み.
 
 	// マルチバイト文字列からワイド文字列へ変換.
 	int iBufLen = MultiByteToWideChar(CP_ACP, 0, pszBuf, -1, NULL, 0);	// まずは長さを取得.
