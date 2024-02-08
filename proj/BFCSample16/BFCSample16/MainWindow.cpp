@@ -166,7 +166,7 @@ int CMainWindow::OnFileSave(WPARAM wParam, LPARAM lParam) {
 	WideCharToMultiByte(CP_ACP, 0, wstrEditText.c_str(), -1, pszBuf, iBufLen, NULL, NULL);	// 変換.
 
 	// "test.txt"にファイル出力.
-	put_file_text_cstdio("test.txt", pszBuf);	// put_file_text_cstdioでpszBufを"test.txt"に出力.
+	write_file_text_cstdio("test.txt", pszBuf, iBufLen - 1);	// write_file_text_cstdioでpszBufを"test.txt"に出力.
 
 	// メモリ解放.
 	delete[] pszBuf;	// delete[]でpszBufの解放.
@@ -189,7 +189,8 @@ int CMainWindow::OnFileOpen(WPARAM wParam, LPARAM lParam) {
 	char* pszBuf = new char[file_size + 1];	// newで(file_size + 1)分のメモリ確保.
 
 	// ファイル読み込み.
-	get_file_text_cstdio("test.txt", pszBuf, file_size + 1);	// get_file_text_cstdioで読み込み.
+	size_t ret = read_file_text_cstdio("test.txt", pszBuf, file_size + 1);	// read_file_text_cstdioで読み込み.
+	pszBuf[ret] = '\0';	// NULL終端する.
 
 	// マルチバイト文字列からワイド文字列へ変換.
 	int iBufLen = MultiByteToWideChar(CP_ACP, 0, pszBuf, -1, NULL, 0);	// まずは長さを取得.
