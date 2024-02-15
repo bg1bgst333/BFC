@@ -189,7 +189,7 @@ int CMainWindow::OnFileOpen(WPARAM wParam, LPARAM lParam) {
 	char* pszBuf = new char[file_size + 1];	// newで(file_size + 1)分のメモリ確保.
 
 	// ファイル読み込み.
-	size_t ret = read_file_text_cstdio("test.txt", pszBuf, file_size + 1);	// read_file_text_cstdioで読み込み.
+	size_t ret = read_file_binary_cstdio("test.txt", pszBuf, file_size + 1);	// read_file_binary_cstdioで読み込み.
 	pszBuf[ret] = '\0';	// NULL終端する.
 
 	// マルチバイト文字列からワイド文字列へ変換.
