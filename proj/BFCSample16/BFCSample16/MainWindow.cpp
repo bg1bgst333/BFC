@@ -183,7 +183,7 @@ int CMainWindow::OnFileSave(WPARAM wParam, LPARAM lParam) {
 int CMainWindow::OnFileOpen(WPARAM wParam, LPARAM lParam) {
 
 	// "test.txt"のサイズを取得.
-	size_t file_size = get_file_size("test.txt");	// get_file_sizeで"test.txt"のサイズfile_sizeを取得.
+	size_t file_size = get_file_size_w(L"test.txt");	// get_file_size_wで"test.txt"のサイズfile_sizeを取得.
 
 	// バッファの確保.
 	char* pszBuf = new char[file_size + 1];	// newで(file_size + 1)分のメモリ確保.
