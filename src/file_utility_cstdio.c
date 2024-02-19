@@ -285,3 +285,17 @@ size_t read_file_binary_cstdio_w(const wchar_t* path, void* bytes, size_t size) 
 	return 0;	/* returnで0を返す. */
 
 }
+
+/* ファイルサイズの取得. */
+size_t get_file_size_w(const wchar_t* path) {
+
+	/* 構造体の初期化. */
+	struct _stat sst = { 0 };	/* _stat構造体sstを{0}で初期化. */
+
+	/* ファイル情報の取得. */
+	_wstat(path, &sst);	/* _wstatでpathで示されたファイルの情報をsstに格納. */
+
+	/* ファイルサイズを返す. */
+	return sst.st_size;	/* returnでsst.st_sizeを返す. */
+
+}

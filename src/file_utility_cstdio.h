@@ -20,5 +20,6 @@ int write_file_binary_cstdio(const char* path, const void* bytes, size_t size);	
 size_t read_file_binary_cstdio(const char* path, void* bytes, size_t size);	/* ŠÖ”read_file_binary_cstdio‚ÌéŒ¾. */
 int write_file_binary_cstdio_w(const wchar_t* path, const void* bytes, size_t size);	/* ŠÖ”write_file_binary_cstdio_w‚ÌéŒ¾. */
 size_t read_file_binary_cstdio_w(const wchar_t* path, void* bytes, size_t size);	/* ŠÖ”read_file_binary_cstdio_w‚ÌéŒ¾. */
+size_t get_file_size_w(const wchar_t* path);	/* ŠÖ”get_file_size_w‚ÌéŒ¾. */
 
 #endif
