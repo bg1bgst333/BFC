@@ -10,6 +10,7 @@
 #include <map>			// std::map
 // 独自のヘッダ
 #include "HandlerConditions.h"	// 構造体HandlerConditions
+#include "Menu.h"	// CMenu
 
 // マクロの定義
 // UNICODE切り替え
@@ -27,6 +28,8 @@ class CWindow {
 
 		// publicメンバ変数
 		HWND m_hWnd;	// HWND型ウィンドウハンドルm_hWnd.
+		HWND m_hWndTemp;	// 生成確定までの一時的なウィンドウハンドル.
+
 		// staticメンバ変数
 		static std::map<HWND, CWindow *> m_mapWindowMap;	// ウィンドウハンドルをキー, CWindowオブジェクトポインタを値とするマップm_mapWindowMap.
 		static std::map<DWORD, HandlerConditions*>m_mapHandlerMap;	// DWORD値をキー, HandlerConditions構造体ポインタを値とするマップm_mapHandlerMap.
@@ -53,6 +56,10 @@ class CWindow {
 		virtual int GetWindowTextLength() const;	// テキストの長さを取得.
 		virtual void SetWindowText(LPCTSTR lpctszString);	// テキストの設定.
 		virtual void MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint = TRUE);	// ウィンドウの位置とサイズ変更.
+		virtual CMenu * GetMenu();	// CMenuオブジェクトポインタの取得.
+		virtual BOOL SetMenu(HMENU hMenu);	// メニューハンドルをセット.
+		virtual BOOL SetMenu(CMenu* pMenu);	// CMenuオブジェクトポインタをセット.
+		virtual BOOL DrawMenuBar();	// メニューの描画.
 		virtual LRESULT DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);	// ダイナミックウィンドウプロシージャDynamicWindowProc
 		virtual int OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct);	// ウィンドウの作成が開始された時.
 		virtual void OnDestroy();	// ウィンドウが破棄された時.
