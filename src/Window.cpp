@@ -11,6 +11,7 @@ CWindow::CWindow() {
 
 	// メンバの初期化.
 	m_hWnd = NULL;	// m_hWndをNULLで初期化.
+	m_hWndTemp = NULL;	// m_hWndTempをNULLで初期化.
 
 }
 
@@ -273,6 +274,58 @@ void CWindow::MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint) {
 
 }
 
+// CMenuオブジェクトポインタの取得.
+CMenu* CWindow::GetMenu() {
+
+	// m_hWndまたはm_hWndTempから取得.
+	HWND h = NULL;
+	if (m_hWnd != NULL) {
+		h = m_hWnd;
+	}
+	else {
+		h = m_hWndTemp;
+	}
+	HMENU hMenu = ::GetMenu(h);
+	if (hMenu == NULL) {
+		return NULL;
+	}
+	else {
+		CMenu* pMenu = CMenu::FromHandle(hMenu);
+		return pMenu;
+	}
+}
+
+// メニューハンドルをセット.
+BOOL CWindow::SetMenu(HMENU hMenu){
+
+	// 渡されたメニューハンドルをセット.
+	HWND h = NULL;
+	if (m_hWnd != NULL){
+		h = m_hWnd;
+	}
+	else{
+		h = m_hWndTemp;
+	}
+	return ::SetMenu(h, hMenu);
+
+}
+
+// CMenuオブジェクトポインタをセット.
+BOOL CWindow::SetMenu(CMenu* pMenu) {
+
+	// 渡されたオブジェクトの持つメニューハンドルをセット.
+	return SetMenu(pMenu->m_hMenu);
+
+}
+
+// メニューの描画.
+BOOL CWindow::DrawMenuBar() {
+
+	// メニューを描画する.
+	return ::DrawMenuBar(m_hWnd);
+
+}
+
 // ダイナミックウィンドウプロシージャDynamicWindowProc.
 LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
@@ -413,6 +466,9 @@ LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 
 // ウィンドウの作成が開始された時.
 int CWindow::OnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct) {
+
+	// 一時的に格納.
+	m_hWndTemp = hwnd;
 
 	// 常にウィンドウ作成に成功するものとする.
 	return 0;	// 0を返すと, ウィンドウ作成に成功したということになる.
