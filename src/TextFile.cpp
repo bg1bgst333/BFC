@@ -242,8 +242,6 @@ void CTextFile::Clear() {
 
 	// メンバの終了処理.
 	m_tstrText.clear();	// クリア.
-	m_Encoding = ENCODING_NONE;	// エンコード無し.
-	m_Bom = BOM_NONE;	// BOM無し.
 
 	// 親クラスのClearを呼ぶ.
 	CBinaryFile::Clear();	// バッファクリア.
