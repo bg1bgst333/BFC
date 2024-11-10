@@ -178,12 +178,17 @@ CTextFile::NEW_LINE CTextFile::CheckNewLine() {
 
 	// まずCR('\r')を探す.
 	size_t f = m_tstrText.find_first_of(_T('\r'));	// '\r'の位置をfに格納.
-	if (f != -1 && f < m_tstrText.length() - 1) {	// f('\r')が見つかった場合.
-		if (m_tstrText[f + 1] == '\n') {	// 次が'\n'の場合.
-			m_NewLine = NEW_LINE_CRLF;	// NEW_LINE_CRLFをセット.
-		}
-		else {	// '\r'だけ.
+	if (f != -1) {	// f('\r')が見つかった場合.
+		if (f == m_tstrText.length() - 1) {	// 最後が'\r'.
 			m_NewLine = NEW_LINE_CR;	// NEW_LINE_CRをセット.
+		}
+		else {	// 最後でない.
+			if (m_tstrText[f + 1] == '\n') {	// 次が'\n'の場合.
+				m_NewLine = NEW_LINE_CRLF;	// NEW_LINE_CRLFをセット.
+			}
+			else {	// '\r'だけ.
+				m_NewLine = NEW_LINE_CR;	// NEW_LINE_CRをセット.
+			}
 		}
 	}
 	else {	// '\r'はないので, '\n'を探す.
