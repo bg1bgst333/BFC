@@ -17,12 +17,16 @@ class CTextFile : public CBinaryFile {
 		typedef enum TAG_ENCODING {
 			ENCODING_NONE,
 			ENCODING_SHIFT_JIS,
-			ENCODING_UTF_16LE
+			ENCODING_UTF_16LE,
+			ENCODING_UTF_16BE,
+			ENCODING_UTF_8
 		} ENCODING;
 		// BOM
 		typedef enum TAG_BOM {
 			BOM_NONE,
-			BOM_UTF16LE
+			BOM_UTF16LE,
+			BOM_UTF16BE,
+			BOM_UTF8
 		} BOM;
 		// 改行コード
 		typedef enum TAG_NEW_LINE {
@@ -41,12 +45,18 @@ class CTextFile : public CBinaryFile {
 		// publicメンバ関数
 		void SetText(tstring tstrText);	// テキストのセット.
 		void EncodeUtf16LE();	// テキストをUTF-16LEバイト列に変換してバッファにセット.
+		void EncodeUtf16BE();	// テキストをUTF-16BEバイト列に変換してバッファにセット.
 		void EncodeUtf16LEWithBom();	// テキストをBOM付きUTF-16LEバイト列に変換してバッファにセット.
+		void EncodeUtf16BEWithBom();	// テキストをBOM付きUTF-16BEバイト列に変換してバッファにセット.
+		BOOL EncodeUtf8();	// テキストをUTF-8バイト列に変換してバッファにセット.
+		BOOL EncodeUtf8WithBom();	// テキストをBOM付きUTF-8バイト列に変換してバッファにセット.
 		BOOL EncodeShiftJis();	// テキストをShift_JISバイト列に変換に変換してバッファにセット.
 		void ConvertNewLine(NEW_LINE dest, NEW_LINE src);	// 改行コードの変換.
 		virtual BOOL Write(LPCTSTR lpctszFileName);	// 指定のテキストファイルに全部一斉書き込み.
 		BOM CheckBom();	// BOMのチェック.
 		void DecodeUtf16LEWithBom();	// BOM付きUTF-16LEのバイト列をテキストにデコード.
+		void DecodeUtf16BEWithBom();	// BOM付きUTF-16BEのバイト列をテキストにデコード.
+		BOOL DecodeUtf8WithBom();	// BOM付きUTF-8のバイト列をテキストにデコード.
 		BOOL DecodeShiftJis();	// Shift_JISのバイト列をテキストにデコード.
 		NEW_LINE CheckNewLine();	// 改行のチェック.
 		virtual BOOL Read(LPCTSTR lpctszFileName);	// 指定のテキストファイルを全部一斉読み込み.

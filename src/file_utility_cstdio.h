@@ -21,5 +21,13 @@ size_t read_file_binary_cstdio(const char* path, void* bytes, size_t size);	/* Š
 int write_file_binary_cstdio_w(const wchar_t* path, const void* bytes, size_t size);	/* ŠÖ”write_file_binary_cstdio_w‚ÌéŒ¾. */
 size_t read_file_binary_cstdio_w(const wchar_t* path, void* bytes, size_t size);	/* ŠÖ”read_file_binary_cstdio_w‚ÌéŒ¾. */
 size_t get_file_size_w(const wchar_t* path);	/* ŠÖ”get_file_size_w‚ÌéŒ¾. */
-
+/* ‚±‚Ìê‡, ‚±‚¤‚¢‚Á‚½‘‚«•û‚¶‚á‚È‚¢‚ÆƒRƒ“ƒpƒCƒ‹ƒGƒ‰[‚É‚È‚é–Í—l. */
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void swap_2bytes(char* byte1, char* byte2);	/* ŠÖ”swap_2bytes‚ÌéŒ¾. */
+	int convert_endian_16bit_byte_array(const char* src, char* dest, size_t len);	/* ŠÖ”convert_endian_16bit_byte_array‚ÌéŒ¾. */
+#ifdef __cplusplus
+}
+#endif
 #endif
