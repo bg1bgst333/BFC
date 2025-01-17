@@ -123,6 +123,48 @@ BOOL CTextFile::EncodeShiftJis() {
 
 }
 
+// テキストをEUC-JPバイト列に変換してバッファにセット.
+BOOL CTextFile::EncodeEucJp() {
+
+	// EUC-JPバイト列をバッファにセット.
+	int iLen = WideCharToMultiByte(20932, 0, m_tstrText.c_str(), -1, NULL, 0, NULL, NULL);	// 変換に必要なバッファの長さを取得.
+	if (iLen <= 0) {	// 失敗.
+		return FALSE;
+	}
+	BYTE* pBytes = new BYTE[iLen];	// バイト列を格納する配列pBytes.
+	ZeroMemory(pBytes, sizeof(BYTE) * iLen);	// pBytesを0で埋める.
+	iLen = WideCharToMultiByte(20932, 0, m_tstrText.c_str(), -1, (char*)pBytes, iLen, NULL, NULL);	// ワイド文字からマルチバイト文字への変換.
+	if (iLen <= 0) {	// 失敗.
+		delete[] pBytes;	// delete [] でpBytesを解放.
+		return FALSE;
+	}
+	Set(pBytes, iLen - 1);	// pBytesをiLen - 1分セット.
+	delete[] pBytes;	// delete [] でpBytesを解放.
+	return TRUE;
+
+}
+
+// テキストをJISバイト列に変換してバッファにセット.
+BOOL CTextFile::EncodeJis() {
+
+	// JISバイト列をバッファにセット.
+	int iLen = WideCharToMultiByte(50220, 0, m_tstrText.c_str(), -1, NULL, 0, NULL, NULL);	// 変換に必要なバッファの長さを取得.
+	if (iLen <= 0) {	// 失敗.
+		return FALSE;
+	}
+	BYTE* pBytes = new BYTE[iLen];	// バイト列を格納する配列pBytes.
+	ZeroMemory(pBytes, sizeof(BYTE) * iLen);	// pBytesを0で埋める.
+	iLen = WideCharToMultiByte(50220, 0, m_tstrText.c_str(), -1, (char*)pBytes, iLen, NULL, NULL);	// ワイド文字からマルチバイト文字への変換.
+	if (iLen <= 0) {	// 失敗.
+		delete[] pBytes;	// delete [] でpBytesを解放.
+		return FALSE;
+	}
+	Set(pBytes, iLen - 1);	// pBytesをiLen - 1分セット.
+	delete[] pBytes;	// delete [] でpBytesを解放.
+	return TRUE;
+
+}
+
 // 改行コードの変換.
 void CTextFile::ConvertNewLine(NEW_LINE dest, NEW_LINE src) {
 
@@ -179,7 +221,7 @@ BOOL CTextFile::Write(LPCTSTR lpctszFileName) {
 		if (m_Bom == CTextFile::BOM_UTF16BE) {	// UTF-16BEのBOMなら.
 			EncodeUtf16BEWithBom();	// EncodeUtf16BEWithBomでm_tstrTextをBOM付きUTF-16BEバイト列に変換してバッファにセット.
 		}
-		else {
+		else {	// BOM無しなら.
 			EncodeUtf16BE();	// EncodeUtf16BEでm_tstrTextをBOM無しUTF-16BEバイト列に変換してバッファにセット.
 		}
 	}
@@ -202,8 +244,8 @@ BOOL CTextFile::Write(LPCTSTR lpctszFileName) {
 			}
 		}
 	}
-	else {	// それ以外.
-		// 最終的にShift_JISにする.
+	else if (m_Encoding == CTextFile::ENCODING_SHIFT_JIS) {	// Shift_JISなら.
+		// Shift_JISにする.
 		BOOL bRet = EncodeShiftJis();	// EncodeShiftJisでm_tstrTextをShift_JISバイト列に変換してバッファにセット.
 		if (!bRet) {	// 失敗
 			Close();	// 閉じる.
@@ -211,6 +253,26 @@ BOOL CTextFile::Write(LPCTSTR lpctszFileName) {
 			return FALSE;	// FALSEを返す.
 		}
 	}
+	else if (m_Encoding == CTextFile::ENCODING_EUC_JP) {	// EUC-JPなら.
+		// EUC-JPにする.
+		BOOL bRet = EncodeEucJp();	// EncodeEucJpでm_tstrTextをEUC-JPバイト列に変換してバッファにセット.
+		if (!bRet) {	// 失敗
+			Close();	// 閉じる.
+			Clear();	// バッファもクリア.
+			return FALSE;	// FALSEを返す.
+		}
+	}
+	else {	// それ以外.
+		// 最終的にJISにする.
+		BOOL bRet = EncodeJis();	// EncodeJisでm_tstrTextをJISバイト列に変換してバッファにセット.
+		if (!bRet) {	// 失敗
+			Close();	// 閉じる.
+			Clear();	// バッファもクリア.
+			return FALSE;	// FALSEを返す.
+		}
+	}
+
+	// 書き込み.
 	BOOL bRet = CBinaryFile::Write(lpctszFileName);	// CBinaryFile::Writeで書き込み.
 	Close();	// 閉じる.
 	Clear();	// バッファもクリア.
@@ -319,6 +381,214 @@ BOOL CTextFile::DecodeShiftJis() {
 
 }
 
+// UTF-8のバイト列をテキストにデコード.
+BOOL CTextFile::DecodeUtf8() {
+
+	// UTF-8バイト列をテキストに変換.
+	int iLen = MultiByteToWideChar(CP_UTF8, 0, (char*)m_pBytes, -1, NULL, NULL);	// MultiByteToWideCharでバイト列の変換に必要なバッファの長さiLenを求める.
+	if (iLen <= 0) {	// 失敗.
+		return FALSE;
+	}
+	TCHAR* ptszText = new TCHAR[iLen];	// iLenの分のTCHAR動的配列を用意し, ポインタをptszTextに格納.
+	wmemset(ptszText, _T('\0'), iLen);	// wmemsetでptszTextを_T('0')で埋める.
+	iLen = MultiByteToWideChar(CP_UTF8, 0, (char*)m_pBytes, -1, ptszText, iLen);	// MultiByteToWideCharでマルチバイト文字からワイド文字への変換.
+	if (iLen <= 0) {	// 失敗.
+		delete[] ptszText;	// delete [] でptszTextを解放.
+		return FALSE;
+	}
+	m_tstrText = ptszText;	// m_tstrTextにptszTextをセット.
+	delete[] ptszText;	// delete [] でptszTextを解放.
+	return TRUE;
+
+}
+
+// EUC-JPのバイト列をテキストにデコード.
+BOOL CTextFile::DecodeEucJp() {
+
+	// EUC-JPバイト列をテキストに変換.
+	int iLen = MultiByteToWideChar(20932, 0, (char*)m_pBytes, -1, NULL, NULL);	// MultiByteToWideCharでバイト列の変換に必要なバッファの長さiLenを求める.
+	if (iLen <= 0) {	// 失敗.
+		return FALSE;
+	}
+	TCHAR* ptszText = new TCHAR[iLen];	// iLenの分のTCHAR動的配列を用意し, ポインタをptszTextに格納.
+	wmemset(ptszText, _T('\0'), iLen);	// wmemsetでptszTextを_T('0')で埋める.
+	iLen = MultiByteToWideChar(20932, 0, (char*)m_pBytes, -1, ptszText, iLen);	// MultiByteToWideCharでマルチバイト文字からワイド文字への変換.
+	if (iLen <= 0) {	// 失敗.
+		delete[] ptszText;	// delete [] でptszTextを解放.
+		return FALSE;
+	}
+	m_tstrText = ptszText;	// m_tstrTextにptszTextをセット.
+	delete[] ptszText;	// delete [] でptszTextを解放.
+	return TRUE;
+
+}
+
+// JISのバイト列をテキストにデコード.
+BOOL CTextFile::DecodeJis() {
+
+	// JISバイト列をテキストに変換.
+	int iLen = MultiByteToWideChar(50220, 0, (char*)m_pBytes, -1, NULL, NULL);	// MultiByteToWideCharでバイト列の変換に必要なバッファの長さiLenを求める.
+	if (iLen <= 0) {	// 失敗.
+		return FALSE;
+	}
+	TCHAR* ptszText = new TCHAR[iLen];	// iLenの分のTCHAR動的配列を用意し, ポインタをptszTextに格納.
+	wmemset(ptszText, _T('\0'), iLen);	// wmemsetでptszTextを_T('0')で埋める.
+	iLen = MultiByteToWideChar(50220, 0, (char*)m_pBytes, -1, ptszText, iLen);	// MultiByteToWideCharでマルチバイト文字からワイド文字への変換.
+	if (iLen <= 0) {	// 失敗.
+		delete[] ptszText;	// delete [] でptszTextを解放.
+		return FALSE;
+	}
+	m_tstrText = ptszText;	// m_tstrTextにptszTextをセット.
+	delete[] ptszText;	// delete [] でptszTextを解放.
+	return TRUE;
+
+}
+
+// UTF-8かどうか判定する.
+BOOL CTextFile::IsUtf8(const unsigned char* lpcszStr, size_t uiLen) {
+
+	// UTF-8の文字コード範囲に基づいて1文字ずつチェック.
+	size_t i = 0;
+	while (i < uiLen) {
+		if ((lpcszStr[i] & 0x80) == 0) {	// 1バイト文字.(ASCII)
+			i++;	// 1進む.
+		}
+		else if ((lpcszStr[i] & 0xe0) == 0xc0) {	// 2バイト文字.
+			if (i + 1 >= uiLen || (lpcszStr[i + 1] & 0xc0) != 0x80) {
+				return FALSE;	// 範囲外.
+			}
+			i += 2;	// 2進む.
+		}
+		else if ((lpcszStr[i] & 0xf0) == 0xe0) {	// 3バイト文字.
+			if (i + 2 >= uiLen || (lpcszStr[i + 1] & 0xc0) != 0x80 || (lpcszStr[i + 2] & 0xc0) != 0x80) {
+				return FALSE;	// 範囲外.
+			}
+			i += 3;	// 3進む.
+		}
+		else if ((lpcszStr[i] & 0xf8) == 0xf0) {	// 4バイト文字.
+			if (i + 3 >= uiLen || (lpcszStr[i + 1] & 0xc0) != 0x80 || (lpcszStr[i + 2] & 0xc0) != 0x80 || (lpcszStr[i + 3] & 0xc0) != 0x80) {
+				return FALSE;	// 範囲外.
+			}
+			i += 4;	// 4進む.
+		}
+		else {	// それ以外.
+			return FALSE;	// 範囲外.
+		}
+	}
+	return TRUE;	// 全て範囲内.
+
+}
+
+// Shift_JISかどうか判定する.
+BOOL CTextFile::IsShiftJis(const unsigned char* lpcszStr, size_t uiLen) {
+
+	// Shift_JISの文字コード範囲に基づいて1文字ずつチェック.
+	size_t i = 0;
+	while (i < uiLen) {
+		if (lpcszStr[i] <= 0x7f) {	// 1バイト文字.(ASCII)
+			i++;	// 1進む.
+		}
+		else if (lpcszStr[i] >= 0x81 && lpcszStr[i] <= 0x9f) {	// Shift_JIS確定.
+			if (i + 1 >= uiLen) {
+				return FALSE;	// 無効.
+			}
+			unsigned char next = lpcszStr[i + 1];
+			if ((next >= 0x40 && next <= 0x7e) || (next >= 0x80 && next <= 0xfc)) {	//	2バイト目がShift_JISの範囲.
+				i += 2;	// 2進む.
+			}
+			else {
+				return FALSE;	// 範囲外.
+			}
+		}
+		else if (lpcszStr[i] >= 0xa1 && lpcszStr[i] <= 0xfe) {	// 未確定.
+			if (i + 1 >= uiLen) {
+				return FALSE;	// 無効.
+			}
+			unsigned char next = lpcszStr[i + 1];
+			if (next >= 0xa1 && next <= 0xfe) {	// EUC-JPの2バイト目なので無効.
+				return FALSE;
+			}
+			else if ((next >= 0x40 && next <= 0x7e) || (next >= 0x80 && next <= 0xfc)) {	//	2バイト目がShift_JISの範囲.
+				i += 2;	// 2進む.
+			}
+			else {
+				return FALSE;	// 範囲外.
+			}
+		}
+		else {	// それ以外.
+			return FALSE;	// 範囲外.
+		}
+	}
+	return TRUE;	// 全て範囲内.
+
+}
+
+// EUC-JPかどうか判定する.
+BOOL CTextFile::IsEucJp(const unsigned char* lpcszStr, size_t uiLen) {
+
+	// EUC-JPの文字コード範囲に基づいて1文字ずつチェック.
+	size_t i = 0;
+	while (i < uiLen) {
+		if (lpcszStr[i] <= 0x7f) {	// 1バイト文字.(ASCII)
+			i++;	// 1進む.
+		}
+		else if (lpcszStr[i] == 0x8e) {	// 2バイト文字.(半角カタカナ)
+			if (i + 1 >= uiLen || (lpcszStr[i + 1] < 0xa1 || lpcszStr[i + 1] > 0xdf)) {
+				return FALSE;
+			}
+			i += 2;
+		}
+		else if (lpcszStr[i] == 0x8f) {	// 3バイト文字.(JIS補助漢字)
+			if (i + 2 >= uiLen || (lpcszStr[i + 1] < 0xa1 || lpcszStr[i + 1] > 0xfe) || (lpcszStr[i + 2] < 0xa1 || lpcszStr[i + 2] > 0xfe)) {
+				return FALSE;
+			}
+			i += 3;
+		}
+		else if (lpcszStr[i] >= 0xa1 && lpcszStr[i] <= 0xfe) {	// 2バイト文字.(全角)
+			if (i + 1 >= uiLen || (lpcszStr[i + 1] < 0xa1 || lpcszStr[i + 1] > 0xfe)) {
+				return FALSE;
+			}
+			i += 2;
+		}
+		else {
+			return FALSE;	// 範囲外.
+		}
+	}
+	return TRUE;	// 全て範囲内.
+
+}
+
+// JISかどうか判定する.
+BOOL CTextFile::IsJis(const unsigned char* lpcszStr, size_t uiLen) {
+
+	// JISの文字コード範囲に基づいて1文字ずつチェック.
+	size_t i = 0;
+	while (i < uiLen) {
+		if (lpcszStr[i] == 0x1b) {	// エスケープ文字の検出.
+			if (i + 2 >= uiLen) {
+				return FALSE;	// 無効.
+			}
+			if ((lpcszStr[i + 1] == '(' && (lpcszStr[i + 2] == 'B' || lpcszStr[i + 2] == 'J'))
+				|| (lpcszStr[i + 1] == '$' && (lpcszStr[i + 2] == '@' || lpcszStr[i + 2] == 'B'))
+				|| (lpcszStr[i + 1] == '(' && lpcszStr[i + 2] == 'I')) {
+				i += 3;
+				continue;	// 有効なエスケープシーケンスをスキップ.
+			}
+			else {
+				return FALSE;	// 無効.
+			}
+		}
+		if (lpcszStr[i] <= 0x7f) {	// ASCII文字はそのまま進める.
+			i++;
+		}
+		else {
+			return FALSE;	// 無効.
+		}
+	}
+	return TRUE;	// 全て範囲内.
+
+}
+
 // 改行のチェック.
 CTextFile::NEW_LINE CTextFile::CheckNewLine() {
 
@@ -367,7 +637,6 @@ BOOL CTextFile::Read(LPCTSTR lpctszFileName) {
 
 		// ファイルを閉じる.
 		Close();
-
 		// BOMのチェック.
 		CheckBom();
 		if (m_Bom == BOM_UTF16LE) {	// UTF-16LEのBOMの場合.
@@ -383,8 +652,44 @@ BOOL CTextFile::Read(LPCTSTR lpctszFileName) {
 			DecodeUtf8WithBom();	// BOM付きUTF-8をテキストにデコード.
 		}
 		else {	// それ以外.
-			m_Encoding = ENCODING_SHIFT_JIS;
-			DecodeShiftJis();	// Shift_JISをテキストにデコード.
+			// JISかどうか判定.
+			BOOL bJis = IsJis(m_pBytes, m_dwSize);	// IsUtf8でJISかどうか判定.
+			if (bJis) {	// TRUE.
+				// JISとして変換.
+				m_Encoding = ENCODING_JIS;
+				DecodeJis();	// JISをテキストにデコード.
+			}
+			else {
+				// UTF-8かどうか判定.
+				BOOL bUtf8 = IsUtf8(m_pBytes, m_dwSize);	// IsUtf8でUTF-8かどうか判定.
+				if (bUtf8) {	// TRUE.
+					// UTF-8として変換.
+					m_Encoding = ENCODING_UTF_8;
+					DecodeUtf8();	// UTF-8をテキストにデコード.
+				}
+				else {	// FALSE.
+					// Shift_JISかどうか判定.
+					BOOL bShiftJis = IsShiftJis(m_pBytes, m_dwSize);	// IsShiftJisでShift_JISかどうか判定.
+					if (bShiftJis) {	// TRUE.
+						// Shift_JISとして変換.
+						m_Encoding = ENCODING_SHIFT_JIS;
+						DecodeShiftJis();	// Shift_JISをテキストにデコード.
+					}
+					else {	// FALSE.
+						// EUC-JPかどうか判定.
+						BOOL bEucJp = IsEucJp(m_pBytes, m_dwSize);	// IsEucJpでEUC-JPかどうか判定.
+						if (bEucJp) {	// TRUE.
+							// EUC-JPとして変換.
+							m_Encoding = ENCODING_EUC_JP;
+							DecodeEucJp();	// EUC-JPをテキストにデコード.
+						}
+						else {	// FALSE.
+							MessageBox(NULL, _T("Unknown"), _T("Aoi32"), MB_OK);	// "Unknown"と表示.
+							return FALSE;	// ここで終了.
+						}
+					}
+				}
+			}
 		}
 		CheckNewLine();	// 改行コードのチェック.
 		if (m_NewLine != NEW_LINE_NONE || m_NewLine != NEW_LINE_CRLF) {	// 改行無しではない or CRLFではない場合.
