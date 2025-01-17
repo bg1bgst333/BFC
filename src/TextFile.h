@@ -19,7 +19,9 @@ class CTextFile : public CBinaryFile {
 			ENCODING_SHIFT_JIS,
 			ENCODING_UTF_16LE,
 			ENCODING_UTF_16BE,
-			ENCODING_UTF_8
+			ENCODING_UTF_8,
+			ENCODING_EUC_JP,
+			ENCODING_JIS
 		} ENCODING;
 		// BOM
 		typedef enum TAG_BOM {
@@ -51,6 +53,8 @@ class CTextFile : public CBinaryFile {
 		BOOL EncodeUtf8();	// テキストをUTF-8バイト列に変換してバッファにセット.
 		BOOL EncodeUtf8WithBom();	// テキストをBOM付きUTF-8バイト列に変換してバッファにセット.
 		BOOL EncodeShiftJis();	// テキストをShift_JISバイト列に変換に変換してバッファにセット.
+		BOOL EncodeEucJp();	// テキストをEUC-JPバイト列に変換してバッファにセット.
+		BOOL EncodeJis();	// テキストをJISバイト列に変換してバッファにセット.
 		void ConvertNewLine(NEW_LINE dest, NEW_LINE src);	// 改行コードの変換.
 		virtual BOOL Write(LPCTSTR lpctszFileName);	// 指定のテキストファイルに全部一斉書き込み.
 		BOM CheckBom();	// BOMのチェック.
@@ -58,6 +62,13 @@ class CTextFile : public CBinaryFile {
 		void DecodeUtf16BEWithBom();	// BOM付きUTF-16BEのバイト列をテキストにデコード.
 		BOOL DecodeUtf8WithBom();	// BOM付きUTF-8のバイト列をテキストにデコード.
 		BOOL DecodeShiftJis();	// Shift_JISのバイト列をテキストにデコード.
+		BOOL DecodeUtf8();	// UTF-8のバイト列をテキストにデコード.
+		BOOL DecodeEucJp();	// EUC-JPのバイト列をテキストにデコード.
+		BOOL DecodeJis();	// JISのバイト列をテキストにデコード.
+		BOOL IsUtf8(const unsigned char* lpcszStr, size_t uiLen);	// UTF-8かどうか判定する.
+		BOOL IsShiftJis(const unsigned char* lpcszStr, size_t uiLen);	// Shift_JISかどうか判定する.
+		BOOL IsEucJp(const unsigned char* lpcszStr, size_t uiLen);	// EUC-JPかどうか判定する.
+		BOOL IsJis(const unsigned char* lpcszStr, size_t uiLen);	// JISかどうか判定する.
 		NEW_LINE CheckNewLine();	// 改行のチェック.
 		virtual BOOL Read(LPCTSTR lpctszFileName);	// 指定のテキストファイルを全部一斉読み込み.
 		virtual void Clear();	// バッファのクリア.
