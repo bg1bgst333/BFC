@@ -34,6 +34,14 @@ BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName) {
 // ウィンドウクラス登録関数RegisterClass(メニュー名指定バージョン)
 BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTSTR lpctszMenuName) {
 
+	// メニュー名はNULL, 背景色はWHITE_BRUSH.
+	return RegisterClass(hInstance, lpctszClassName, NULL, WHITE_BRUSH);	// RegisterClassのメニュー名にNULL, 背景色にWHITE_BRUSHを指定.
+
+}
+
+// ウィンドウクラス登録関数RegisterClass(メニュー名, 背景色指定バージョン)
+BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTSTR lpctszMenuName, int i) {
+
 	// 変数・構造体の宣言
 	WNDCLASS wc;	// WNDCLASS型ウィンドウクラス構造体wc.
 
@@ -44,12 +52,12 @@ BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTST
 	wc.hInstance = hInstance;	// アプリケーションインスタンスハンドルは引数のhInstanceを使う.
 	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);	// LoadIconでアプリケーション既定のアイコンをロード.
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);	// LoadCursorでアプリケーション既定のカーソルをロード.
-	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);	// GetStockObjectで白ブラシを背景とする.
+	wc.hbrBackground = (HBRUSH)GetStockObject(i);	// GetStockObjectでiを背景とする.
 	wc.lpszMenuName = lpctszMenuName;	// メニューにはlpctszMenuNameをセット.
 	wc.cbClsExtra = 0;	// とりあえず0を指定.
 	wc.cbWndExtra = 0;	// とりあえず0を指定.
 
-	// ウィンドウクラスの登録.
+	// ウィンドウクラスの登録
 	if (!::RegisterClass(&wc)) {	// WindowsAPIのRegisterClassでウィンドウクラスを登録する.
 
 		// 戻り値が0なら登録失敗なのでエラー処理.
@@ -446,6 +454,69 @@ LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			// 既定の処理へ向かう.
 			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
 
+			// マウスが移動している時.
+		case WM_MOUSEMOVE:
+
+			// WM_MOUSEMOVEブロック
+			{
+
+				// 変数の宣言
+				POINT pt;	// POINT構造体変数pt.
+
+				// 座標の取り出し.
+				pt.x = LOWORD(lParam);	// lParamの下位ワードが座標x.
+				pt.y = HIWORD(lParam);	// lParamの上位ワードが座標y.
+
+				// OnMouseMoveに任せる.
+				OnMouseMove(wParam, pt);	// OnMouseMoveにwParamとptを渡す.
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理へ向かう.
+
+		// マウスの左ボタンが押された時.
+		case WM_LBUTTONDOWN:
+
+			// WM_LBUTTONDOWNブロック
+			{
+
+				// 変数の宣言
+				POINT pt;	// POINT構造体変数pt.
+
+				// 座標の取り出し.
+				pt.x = LOWORD(lParam);	// lParamの下位ワードが座標x.
+				pt.y = HIWORD(lParam);	// lParamの上位ワードが座標y.
+
+				// OnLButtonDownに任せる.
+				OnLButtonDown(wParam, pt);	// OnLButtonDownにwParamとptを渡す.
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理へ向かう.
+
+		// マウスの左ボタンが離された時.
+		case WM_LBUTTONUP:
+
+			// WM_LBUTTONUPブロック
+			{
+
+				// 変数の宣言
+				POINT pt;	// POINT構造体変数pt.
+
+				// 座標の取り出し.
+				pt.x = LOWORD(lParam);	// lParamの下位ワードが座標x.
+				pt.y = HIWORD(lParam);	// lParamの上位ワードが座標y.
+
+				// OnLButtonUpに任せる.
+				OnLButtonUp(wParam, pt);	// OnLButtonUpにwParamとptを渡す.
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理へ向かう.
+
 		// 上記以外の時.
 		default:
 
@@ -760,5 +831,20 @@ void CWindow::OnVScroll(UINT nSBCode, UINT nPos) {
 	SetScrollInfo(m_hWnd, SB_VERT, &scrVert, TRUE);	// SetScrollInfoで現在のscrVert.nPosをm_hWndにセット.
 	InvalidateRect(m_hWnd, NULL, TRUE);	// InvalidateRectで無効領域を作成.(NULLなので全体が無効領域.)
 	UpdateWindow(m_hWnd);	// UpdateWindowでウィンドウの更新.
+
+}
+
+// マウスが移動している時.
+void CWindow::OnMouseMove(UINT nFlags, POINT pt) {
+
+}
+
+// マウスの左ボタンが押された時.
+void CWindow::OnLButtonDown(UINT nFlags, POINT pt) {
+
+}
+
+// マウスの左ボタンが離された時.
+void CWindow::OnLButtonUp(UINT nFlags, POINT pt) {
 
 }
