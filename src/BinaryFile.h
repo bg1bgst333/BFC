@@ -22,7 +22,9 @@ class CBinaryFile : public CFile {
 		virtual ~CBinaryFile();	// デストラクタ~CBinaryFile
 		// メンバ関数
 		virtual BOOL Read(LPCTSTR lpctszFileName);	// 指定のバイナリファイルから全部一斉読み込み.
+		virtual BOOL Read(LPCTSTR lpctszFileName, DWORD dwPos, DWORD dwSize);	// 指定のバイナリファイルを指定の位置から指定サイズ読み込み.
 		virtual BOOL Write(LPCTSTR lpctszFileName);	// 指定のバイナリファイルに全部一斉書き込み.
+		virtual BOOL Write();	// 開いているバイナリファイルへの追加書き込み.
 		virtual void Set(BYTE* pBytes, DWORD dwSize);	// 全部一斉に書き込むバッファのセット.
 		virtual void Clear();	// バッファのクリア.
 

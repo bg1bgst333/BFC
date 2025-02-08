@@ -41,6 +41,7 @@ class CWindow {
 		// staticメンバ関数
 		static BOOL RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName);	// ウィンドウクラス登録関数RegisterClass
 		static BOOL RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTSTR lpctszMenuName);	// ウィンドウクラス登録関数RegisterClass(メニュー名指定バージョン)
+		static BOOL RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTSTR lpctszMenuName, int i);	// ウィンドウクラス登録関数RegisterClass(メニュー名, 背景色指定バージョン)
 		static LRESULT CALLBACK StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);	// スタティックウィンドウプロシージャStaticWindowProc.
 		// メンバ関数
 		virtual BOOL Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance);	// ウィンドウ作成関数Create.
@@ -69,6 +70,9 @@ class CWindow {
 		virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);	// コマンドが発生した時.
 		virtual void OnHScroll(UINT nSBCode, UINT nPos);	// 水平方向スクロールバーイベント時.
 		virtual void OnVScroll(UINT nSBCode, UINT nPos);	// 垂直方向スクロールバーイベント時.
+		virtual void OnMouseMove(UINT nFlags, POINT pt);	// マウスが移動している時.
+		virtual void OnLButtonDown(UINT nFlags, POINT pt);	// マウスの左ボタンが押された時.
+		virtual void OnLButtonUp(UINT nFlags, POINT pt);	// マウスの左ボタンが離された時.
 
 };
 
