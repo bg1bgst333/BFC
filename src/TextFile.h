@@ -43,16 +43,17 @@ class CTextFile : public CBinaryFile {
 		ENCODING m_Encoding;	// 文字コード.
 		BOM m_Bom;	// BOM.
 		NEW_LINE m_NewLine;	// 改行コード.
+		BOOL m_bDetectEnc;	// 文字コード推測.
 
 		// publicメンバ関数
 		void SetText(tstring tstrText);	// テキストのセット.
 		void EncodeUtf16LE();	// テキストをUTF-16LEバイト列に変換してバッファにセット.
-		void EncodeUtf16BE();	// テキストをUTF-16BEバイト列に変換してバッファにセット.
 		void EncodeUtf16LEWithBom();	// テキストをBOM付きUTF-16LEバイト列に変換してバッファにセット.
+		void EncodeUtf16BE();	// テキストをUTF-16BEバイト列に変換してバッファにセット.
 		void EncodeUtf16BEWithBom();	// テキストをBOM付きUTF-16BEバイト列に変換してバッファにセット.
 		BOOL EncodeUtf8();	// テキストをUTF-8バイト列に変換してバッファにセット.
 		BOOL EncodeUtf8WithBom();	// テキストをBOM付きUTF-8バイト列に変換してバッファにセット.
-		BOOL EncodeShiftJis();	// テキストをShift_JISバイト列に変換に変換してバッファにセット.
+		BOOL EncodeShiftJis();	// テキストをShift_JISバイト列に変換してバッファにセット.
 		BOOL EncodeEucJp();	// テキストをEUC-JPバイト列に変換してバッファにセット.
 		BOOL EncodeJis();	// テキストをJISバイト列に変換してバッファにセット.
 		void ConvertNewLine(NEW_LINE dest, NEW_LINE src);	// 改行コードの変換.
@@ -65,6 +66,7 @@ class CTextFile : public CBinaryFile {
 		BOOL DecodeUtf8();	// UTF-8のバイト列をテキストにデコード.
 		BOOL DecodeEucJp();	// EUC-JPのバイト列をテキストにデコード.
 		BOOL DecodeJis();	// JISのバイト列をテキストにデコード.
+		BOOL DetectEncoding();	// バイト列から文字コードを推測.
 		BOOL IsUtf8(const unsigned char* lpcszStr, size_t uiLen);	// UTF-8かどうか判定する.
 		BOOL IsShiftJis(const unsigned char* lpcszStr, size_t uiLen);	// Shift_JISかどうか判定する.
 		BOOL IsEucJp(const unsigned char* lpcszStr, size_t uiLen);	// EUC-JPかどうか判定する.

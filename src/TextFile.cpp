@@ -1,4 +1,6 @@
 // ヘッダのインクルード
+// 既定のヘッダ
+#include <mlang.h>	// 多言語
 // 独自のヘッダ
 #include "TextFile.h"	// CTextFile
 #include "string_utility_cppstring.h"	// 文字列ユーティリティ(C++文字列処理)
@@ -20,17 +22,6 @@ void CTextFile::EncodeUtf16LE() {
 
 }
 
-// テキストをUTF-16BEバイト列に変換してバッファにセット.
-void CTextFile::EncodeUtf16BE() {
-
-	// バイト列を入れ替える.
-	BYTE* pByte = new BYTE[m_tstrText.length() * 2];
-	convert_endian_16bit_byte_array((char*)m_tstrText.c_str(), (char*)pByte, m_tstrText.length() * 2);
-	Set(pByte, m_tstrText.length() * 2);
-	delete[] pByte;
-
-}
-
 // テキストをBOM付きUTF-16LEバイト列に変換してバッファにセット.
 void CTextFile::EncodeUtf16LEWithBom() {
 
@@ -41,6 +32,17 @@ void CTextFile::EncodeUtf16LEWithBom() {
 	memcpy(pByteWithBOM + 2, (BYTE*)m_tstrText.c_str(), m_tstrText.length() * 2);	// pByteWithBOM + 2以降にコピー.
 	Set(pByteWithBOM, (m_tstrText.length() + 1) * 2);	// pByteWithBOMをセット.(サロゲートペアなど非対応.)
 	delete[] pByteWithBOM;	// deleteでpByteWithBOMを解放.
+
+}
+
+// テキストをUTF-16BEバイト列に変換してバッファにセット.
+void CTextFile::EncodeUtf16BE() {
+
+	// バイト列を入れ替える.
+	BYTE* pByte = new BYTE[m_tstrText.length() * 2];
+	convert_endian_16bit_byte_array((char*)m_tstrText.c_str(), (char*)pByte, m_tstrText.length() * 2);
+	Set(pByte, m_tstrText.length() * 2);
+	delete[] pByte;
 
 }
 
@@ -102,7 +104,7 @@ BOOL CTextFile::EncodeUtf8WithBom() {
 
 }
 
-// テキストをShift_JISバイト列に変換に変換してバッファにセット.
+// テキストをShift_JISバイト列に変換してバッファにセット.
 BOOL CTextFile::EncodeShiftJis() {
 
 	// Shift_JISバイト列をバッファにセット.
@@ -444,6 +446,63 @@ BOOL CTextFile::DecodeJis() {
 
 }
 
+// バイト列から文字コードを推測.
+BOOL CTextFile::DetectEncoding() {
+
+	// COMの初期化.
+	HRESULT hr = CoInitialize(NULL);
+	if (FAILED(hr)) {
+		m_Encoding = ENCODING_NONE;
+		return FALSE;
+	}
+
+	// IMultiLanguage2インターフェイスの生成.
+	IMultiLanguage2* pMultiLang2 = NULL;
+	HRESULT hr2 = CoCreateInstance(CLSID_CMultiLanguage, 0, CLSCTX_INPROC_SERVER, IID_IMultiLanguage2, (LPVOID*)&pMultiLang2);
+	if (FAILED(hr2)) {
+		CoUninitialize();
+		m_Encoding = ENCODING_NONE;
+		return FALSE;
+	}
+
+	// 文字コード検出.
+	int len = m_dwSize;
+	DetectEncodingInfo dei[10];
+	int num = 10;
+	HRESULT hr3 = pMultiLang2->DetectInputCodepage(MLDETECTCP_NONE, 0, (CHAR*)m_pBytes, &len, dei, &num);
+	if (FAILED(hr3)) {
+		pMultiLang2->Release();
+		CoUninitialize();
+		m_Encoding = ENCODING_NONE;
+		return FALSE;
+	}
+
+	// 終了処理.
+	pMultiLang2->Release();
+	CoUninitialize();
+	if (dei[0].nCodePage == 932) {	// Shift_JIS
+		m_Encoding = ENCODING_SHIFT_JIS;
+		return TRUE;
+	}
+	else if (dei[0].nCodePage == 65001) {	// UTF-8
+		m_Encoding = ENCODING_UTF_8;
+		return TRUE;
+	}
+	else if (dei[0].nCodePage == 50220) {	// JIS
+		m_Encoding = ENCODING_JIS;
+		return TRUE;
+	}
+	else if (dei[0].nCodePage == 51932) {	// EUC-JP
+		m_Encoding = ENCODING_EUC_JP;
+		return TRUE;
+	}
+	else {	// 不明
+		m_Encoding = ENCODING_NONE;
+		return TRUE;
+	}
+
+}
+
 // UTF-8かどうか判定する.
 BOOL CTextFile::IsUtf8(const unsigned char* lpcszStr, size_t uiLen) {
 
@@ -652,47 +711,73 @@ BOOL CTextFile::Read(LPCTSTR lpctszFileName) {
 			DecodeUtf8WithBom();	// BOM付きUTF-8をテキストにデコード.
 		}
 		else {	// それ以外.
-			// JISかどうか判定.
-			BOOL bJis = IsJis(m_pBytes, m_dwSize);	// IsUtf8でJISかどうか判定.
-			if (bJis) {	// TRUE.
-				// JISとして変換.
-				m_Encoding = ENCODING_JIS;
-				DecodeJis();	// JISをテキストにデコード.
+			if (m_bDetectEnc) {	// 推測オン.
+				DetectEncoding();	// 文字コード推測.
 			}
-			else {
-				// UTF-8かどうか判定.
-				BOOL bUtf8 = IsUtf8(m_pBytes, m_dwSize);	// IsUtf8でUTF-8かどうか判定.
-				if (bUtf8) {	// TRUE.
-					// UTF-8として変換.
-					m_Encoding = ENCODING_UTF_8;
-					DecodeUtf8();	// UTF-8をテキストにデコード.
+			else {	// オフ
+				m_Encoding = ENCODING_NONE;	// 不明.
+			}
+			if (m_Encoding == ENCODING_NONE) {	// 不明なとき.
+				// JISかどうか判定.
+				BOOL bJis = IsJis(m_pBytes, m_dwSize);	// IsUtf8でJISかどうか判定.
+				if (bJis) {	// TRUE.
+					// JISとして変換.
+					m_Encoding = ENCODING_JIS;
+					DecodeJis();	// JISをテキストにデコード.
 				}
-				else {	// FALSE.
-					// Shift_JISかどうか判定.
-					BOOL bShiftJis = IsShiftJis(m_pBytes, m_dwSize);	// IsShiftJisでShift_JISかどうか判定.
-					if (bShiftJis) {	// TRUE.
-						// Shift_JISとして変換.
-						m_Encoding = ENCODING_SHIFT_JIS;
-						DecodeShiftJis();	// Shift_JISをテキストにデコード.
+				else {
+					// UTF-8かどうか判定.
+					BOOL bUtf8 = IsUtf8(m_pBytes, m_dwSize);	// IsUtf8でUTF-8かどうか判定.
+					if (bUtf8) {	// TRUE.
+						// UTF-8として変換.
+						m_Encoding = ENCODING_UTF_8;
+						DecodeUtf8();	// UTF-8をテキストにデコード.
 					}
 					else {	// FALSE.
-						// EUC-JPかどうか判定.
-						BOOL bEucJp = IsEucJp(m_pBytes, m_dwSize);	// IsEucJpでEUC-JPかどうか判定.
-						if (bEucJp) {	// TRUE.
-							// EUC-JPとして変換.
-							m_Encoding = ENCODING_EUC_JP;
-							DecodeEucJp();	// EUC-JPをテキストにデコード.
+						// Shift_JISかどうか判定.
+						BOOL bShiftJis = IsShiftJis(m_pBytes, m_dwSize);	// IsShiftJisでShift_JISかどうか判定.
+						if (bShiftJis) {	// TRUE.
+							// Shift_JISとして変換.
+							m_Encoding = ENCODING_SHIFT_JIS;
+							DecodeShiftJis();	// Shift_JISをテキストにデコード.
 						}
 						else {	// FALSE.
-							MessageBox(NULL, _T("Unknown"), _T("Aoi32"), MB_OK);	// "Unknown"と表示.
-							return FALSE;	// ここで終了.
+							// EUC-JPかどうか判定.
+							BOOL bEucJp = IsEucJp(m_pBytes, m_dwSize);	// IsEucJpでEUC-JPかどうか判定.
+							if (bEucJp) {	// TRUE.
+								// EUC-JPとして変換.
+								m_Encoding = ENCODING_EUC_JP;
+								DecodeEucJp();	// EUC-JPをテキストにデコード.
+							}
+							else {	// FALSE.
+								MessageBox(NULL, _T("Unknown"), _T("CTextFile"), MB_OK);	// "Unknown"と表示.
+								CBinaryFile::Clear();	// バッファクリア.
+								return FALSE;	// ここで終了.
+							}
 						}
 					}
 				}
+			}
+			else if (m_Encoding == ENCODING_SHIFT_JIS) {	// Shift_JISなとき.
+				DecodeShiftJis();	// Shift_JISをテキストにデコード.
+			}
+			else if (m_Encoding == ENCODING_UTF_8) {	// UTF-8なとき.
+				DecodeUtf8();	// UTF-8をテキストにデコード.
+			}
+			else if (m_Encoding == ENCODING_JIS) {	// JISなとき.
+				DecodeJis();	// JISをテキストにデコード.
+			}
+			else if (m_Encoding == ENCODING_EUC_JP) {	// EUC-JPなとき.
+				DecodeEucJp();	// EUC-JPをテキストにデコード.
+			}
+			else {	// それ以外.
+				MessageBox(NULL, _T("Unknown"), _T("CTextFile"), MB_OK);	// "Unknown"と表示.
+				CBinaryFile::Clear();	// バッファクリア.
+				return FALSE;	// ここで終了.
 			}
 		}
 		CheckNewLine();	// 改行コードのチェック.
-		if (m_NewLine != NEW_LINE_NONE || m_NewLine != NEW_LINE_CRLF) {	// 改行無しではない or CRLFではない場合.
+		if (m_NewLine != NEW_LINE_NONE && m_NewLine != NEW_LINE_CRLF) {	// 改行無しではない and CRLFではない場合.
 			ConvertNewLine(CTextFile::NEW_LINE_CRLF, m_NewLine);	// CRLFに変換.
 		}
 		CBinaryFile::Clear();	// バッファクリア.
