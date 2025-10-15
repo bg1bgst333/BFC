@@ -36,6 +36,14 @@ BOOL CUserControl::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, i
 
 }
 
+// ウィンドウクラス登録関数RegisterClass(背景ブラシハンドル指定バージョン.)
+BOOL CUserControl::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, HBRUSH hbrBackground) {
+
+	// ウィンドウクラス名にはlpctszClassName, 背景ブラシハンドルにはhbrBackgroundを指定.
+	return CWindow::RegisterClass(hInstance, lpctszClassName, NULL, hbrBackground);	// CWindow::RegisterClassでウィンドウクラス名lpctszClassNameを登録.
+
+}
+
 // ウィンドウ作成関数Create.(ウィンドウクラス名省略バージョン.)
 BOOL CUserControl::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
 

@@ -70,6 +70,37 @@ BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTST
 
 }
 
+// ウィンドウクラス登録関数RegisterClass(メニュー名, 背景ブラシハンドル指定バージョン)
+BOOL CWindow::RegisterClass(HINSTANCE hInstance, LPCTSTR lpctszClassName, LPCTSTR lpctszMenuName, HBRUSH hbrBackground) {
+
+	// 変数・構造体の宣言
+	WNDCLASS wc;	// WNDCLASS型ウィンドウクラス構造体wc.
+
+	// ウィンドウクラス構造体wcにパラメータをセット.
+	wc.lpszClassName = lpctszClassName;	// ウィンドウクラス名にlpctszClassNameをセットする.
+	wc.style = CS_HREDRAW | CS_VREDRAW;	// スタイルはとりあえずCS_HREDRAW | CS_VREDRAWとする.
+	wc.lpfnWndProc = StaticWindowProc;	// ウィンドウプロシージャには下で定義するStaticWindowProcを指定する.
+	wc.hInstance = hInstance;	// アプリケーションインスタンスハンドルは引数のhInstanceを使う.
+	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);	// LoadIconでアプリケーション既定のアイコンをロード.
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);	// LoadCursorでアプリケーション既定のカーソルをロード.
+	wc.hbrBackground = hbrBackground;	// 指定されたhbrBackgroundを背景とする.
+	wc.lpszMenuName = lpctszMenuName;	// メニューにはlpctszMenuNameをセット.
+	wc.cbClsExtra = 0;	// とりあえず0を指定.
+	wc.cbWndExtra = 0;	// とりあえず0を指定.
+
+	// ウィンドウクラスの登録
+	if (!::RegisterClass(&wc)) {	// WindowsAPIのRegisterClassでウィンドウクラスを登録する.
+
+		// 戻り値が0なら登録失敗なのでエラー処理.
+		return FALSE;	// FALSEを返す.
+
+	}
+
+	// 登録成功なのでTRUE.
+	return TRUE;	// returnでTRUEを返す.
+
+}
+
 // スタティックウィンドウプロシージャStaticWindowProc関数の定義
 LRESULT CALLBACK CWindow::StaticWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
