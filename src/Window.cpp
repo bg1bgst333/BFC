@@ -198,6 +198,23 @@ BOOL CWindow::Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int 
 
 }
 
+// ウィンドウ作成関数CreateEx.
+BOOL CWindow::CreateEx(DWORD dwExStyle, LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance) {
+
+	// ウィンドウの作成.
+	m_hWnd = CreateWindowEx(dwExStyle, lpctszClassName, lpctszWindowName, dwStyle, x, y, iWidth, iHeight, hWndParent, hMenu, hInstance, this);	// CreateWindowExでウィンドウを作成し, ハンドルをm_hWndに格納.(最後の引数にオブジェクト自身のポインタthisを渡す.)
+	if (m_hWnd == NULL) {	// m_hWndがNULLなら失敗.
+
+		// m_hWndがNULLならウィンドウ作成失敗なのでエラー処理.
+		return FALSE;	// FALSEを返す.
+
+	}
+
+	// ウィンドウ作成成功なのでTRUE.
+	return TRUE;	// returnでTRUEを返す.
+
+}
+
 // ウィンドウ破棄関数Destroy
 BOOL CWindow::Destroy() {
 
@@ -443,6 +460,29 @@ LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			// 既定の処理へ向かう.
 			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
 
+		// 背景消去を要求された時.
+		case WM_ERASEBKGND:
+
+			// WM_ERASEBKGNDブロック
+			{
+
+				// 0または1の場合はBOOL値を返す.
+				int iRet = OnEraseBkgnd();
+				if (iRet == 0) {
+					return FALSE;
+				}
+				else if (iRet == 1) {
+					return TRUE;
+				}
+				else {
+					break;
+				}
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
+
 		// コマンドが発生した時.
 		case WM_COMMAND:
 
@@ -554,6 +594,9 @@ LRESULT CWindow::DynamicWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			// defaultブロック
 			{
 
+				// OnUserMessageに任せる.
+				OnUserMessage(uMsg, wParam, lParam);	// OnUserMessageに任せる.
+
 			}
 
 			// 既定の処理へ向かう.
@@ -606,6 +649,14 @@ int CWindow::OnClose() {
 
 	// 常に閉じるものとする.
 	return 0;	// 0を返してウィンドウを閉じる.
+
+}
+
+// 背景消去を要求された時.
+int CWindow::OnEraseBkgnd() {
+
+	// 無視する場合は2.
+	return 2;
 
 }
 
@@ -877,5 +928,40 @@ void CWindow::OnLButtonDown(UINT nFlags, POINT pt) {
 
 // マウスの左ボタンが離された時.
 void CWindow::OnLButtonUp(UINT nFlags, POINT pt) {
+
+}
+
+// ユーザ定義メッセージが発生した時.
+void CWindow::OnUserMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+	// switch-case文で振り分ける.
+	switch (uMsg) {
+
+		// 子から親へウィンドウサイズ変更の要求が発生した時.
+		case UM_SIZECHILD:
+
+			// UM_SIZECHILDブロック
+			{
+
+				// OnSizeChildに任せる.
+				OnSizeChild(wParam, lParam);	// OnSizeChildに任せる.
+
+			}
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
+
+		// それ以外.
+		default:
+
+			// 既定の処理へ向かう.
+			break;	// breakで抜けて, 既定の処理(DefWindowProc)へ向かう.
+
+	}
+
+}
+
+// 子から親へウィンドウサイズ変更の要求が発生した時.
+void CWindow::OnSizeChild(WPARAM wParam, LPARAM lParam) {
 
 }

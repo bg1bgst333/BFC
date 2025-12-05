@@ -1,6 +1,7 @@
 // ヘッダのインクルード
 // 既定のヘッダ
 #include <string.h>	// C文字列処理
+#include <shlwapi.h>	// シェルAPI
 // 独自のヘッダ
 extern "C" {	// C言語として解釈する.
 	#include "string_utility_cstring.h"	// 文字列ユーティリティ(C文字列処理)
@@ -51,6 +52,8 @@ INT_PTR CFileDialog::DoModal() {
 	if (m_bOpenFileDalog) {	// "開く"
 		BOOL bRet = GetOpenFileName(&m_ofn);
 		if (bRet) {
+			TCHAR* ptszExt = PathFindExtension(m_ofn.lpstrFile);
+			m_tstrFileExt = ptszExt + 1;
 			return IDOK;
 		}
 		else {
@@ -60,6 +63,8 @@ INT_PTR CFileDialog::DoModal() {
 	else {	// "名前を付けて保存"
 		BOOL bRet = GetSaveFileName(&m_ofn);
 		if (bRet) {
+			TCHAR* ptszExt = PathFindExtension(m_ofn.lpstrFile);
+			m_tstrFileExt = ptszExt + 1;
 			return IDOK;
 		}
 		else {
@@ -74,5 +79,13 @@ OPENFILENAME& CFileDialog::GetOFN() {
 
 	// OPENFILENAMEを返す.
 	return m_ofn;
+
+}
+
+// 拡張子の取得.
+tstring CFileDialog::GetFileExt() {
+
+	// m_tstrFileExtを返す.
+	return m_tstrFileExt;
 
 }

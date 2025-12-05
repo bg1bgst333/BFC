@@ -17,6 +17,7 @@ class CFileDialog {
 		TCHAR m_tszDefExt[16];
 		TCHAR m_tszFileName[1024];
 		TCHAR m_tszFilter[1024];
+		tstring m_tstrFileExt;	// 選択したファイルの拡張子m_tstrFileExt.
 
 	// protectedメンバ
 	protected:
@@ -33,6 +34,7 @@ class CFileDialog {
 		// メンバ関数
 		INT_PTR DoModal();	// モーダル表示.
 		OPENFILENAME& GetOFN();	// OPENFILENAMEの取得.
+		tstring GetFileExt();	// 拡張子の取得.
 
 };
 
