@@ -19,6 +19,9 @@
 #else
 #define tstring std::string
 #endif
+// 独自ウィンドウメッセージ
+#define WM_USERMESSAGE	(WM_APP + 1000)	// 32768 + 1000( = 33768)
+#define UM_SIZECHILD	(WM_USERMESSAGE + 1)	// 33768 + 1( = 33769)
 
 // ウィンドウクラスCWindowの定義
 class CWindow {
@@ -48,6 +51,7 @@ class CWindow {
 		virtual BOOL Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance);	// ウィンドウ作成関数Create.
 		virtual BOOL Create(LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, const RECT& rect, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance);	// ウィンドウ作成関数Create.(RECTバージョン.)
 		virtual BOOL Create(LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance);	// ウィンドウ作成関数Create.(ウィンドウクラス名省略バージョン.)
+		virtual BOOL CreateEx(DWORD dwExStyle, LPCTSTR lpctszClassName, LPCTSTR lpctszWindowName, DWORD dwStyle, int x, int y, int iWidth, int iHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance);	// ウィンドウ作成関数CreateEx.
 		virtual BOOL Destroy();	// ウィンドウ破棄関数Destroy
 		virtual BOOL DestroyChildren();	// 子ウィンドウ破棄関数DestroyChildren
 		virtual BOOL ShowWindow(int nCmdShow);	// ウィンドウ表示関数ShowWindow.
@@ -68,12 +72,15 @@ class CWindow {
 		virtual void OnSize(UINT nType, int cx, int cy);	// ウィンドウのサイズが変更された時.
 		virtual void OnPaint();	// ウィンドウの描画を要求された時.
 		virtual int OnClose();	// ウィンドウが閉じられる時.
+		virtual int OnEraseBkgnd();	// 背景消去を要求された時.
 		virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);	// コマンドが発生した時.
 		virtual void OnHScroll(UINT nSBCode, UINT nPos);	// 水平方向スクロールバーイベント時.
 		virtual void OnVScroll(UINT nSBCode, UINT nPos);	// 垂直方向スクロールバーイベント時.
 		virtual void OnMouseMove(UINT nFlags, POINT pt);	// マウスが移動している時.
 		virtual void OnLButtonDown(UINT nFlags, POINT pt);	// マウスの左ボタンが押された時.
 		virtual void OnLButtonUp(UINT nFlags, POINT pt);	// マウスの左ボタンが離された時.
+		virtual void OnUserMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);	// ユーザ定義メッセージが発生した時.
+		virtual void OnSizeChild(WPARAM wParam, LPARAM lParam);	// 子から親へウィンドウサイズ変更の要求が発生した時.
 
 };
 
