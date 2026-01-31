@@ -680,6 +680,7 @@ BOOL CWindow::OnCommand(WPARAM wParam, LPARAM lParam) {
 
 }
 
+#if 0
 // コンボボックスのアイテム選択が変更された時.
 int CWindow::OnCbnSelChange(WPARAM wParam, LPARAM lParam) {
 
@@ -690,6 +691,7 @@ int CWindow::OnCbnSelChange(WPARAM wParam, LPARAM lParam) {
 	return 0;	// 処理したので0.
 
 }
+#endif
 
 // 水平方向スクロールバーイベント時.
 void CWindow::OnHScroll(UINT nSBCode, UINT nPos) {
