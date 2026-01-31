@@ -680,6 +680,17 @@ BOOL CWindow::OnCommand(WPARAM wParam, LPARAM lParam) {
 
 }
 
+// コンボボックスのアイテム選択が変更された時.
+int CWindow::OnCbnSelChange(WPARAM wParam, LPARAM lParam) {
+
+	// デバッグメッセージ.
+	OutputDebugString(_T("CWindow::OnCbnSelChange\n"));
+
+	// 0を返す.
+	return 0;	// 処理したので0.
+
+}
+
 // 水平方向スクロールバーイベント時.
 void CWindow::OnHScroll(UINT nSBCode, UINT nPos) {
 
