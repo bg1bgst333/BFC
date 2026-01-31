@@ -74,6 +74,7 @@ class CWindow {
 		virtual int OnClose();	// ウィンドウが閉じられる時.
 		virtual int OnEraseBkgnd();	// 背景消去を要求された時.
 		virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);	// コマンドが発生した時.
+		virtual int OnCbnSelChange(WPARAM wParam, LPARAM lParam);	// コンボボックスのアイテム選択が変更された時.
 		virtual void OnHScroll(UINT nSBCode, UINT nPos);	// 水平方向スクロールバーイベント時.
 		virtual void OnVScroll(UINT nSBCode, UINT nPos);	// 垂直方向スクロールバーイベント時.
 		virtual void OnMouseMove(UINT nFlags, POINT pt);	// マウスが移動している時.
