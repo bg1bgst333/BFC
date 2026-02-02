@@ -56,6 +56,7 @@ class CWindow {
 		virtual BOOL DestroyChildren();	// 子ウィンドウ破棄関数DestroyChildren
 		virtual BOOL ShowWindow(int nCmdShow);	// ウィンドウ表示関数ShowWindow.
 		virtual void AddCommandHandler(UINT nID, UINT nCode, int(CWindow::* handler)(WPARAM wParam, LPARAM lParam));	// コマンドハンドラの追加.
+		virtual void AddCommandHandler(UINT nID, UINT nCode, CWindow* w, int(CWindow::* handler)(WPARAM wParam, LPARAM lParam));	// コマンドハンドラの追加.(実行ウィンドウポインタ指定.)
 		virtual void DeleteCommandHandler(UINT nID, UINT nCode);	// コマンドハンドラの削除.
 		virtual int GetWindowText(LPTSTR lptszStringBuf, int nMaxCount) const;	// テキストを取得.
 		virtual void GetWindowText(tstring& rString) const;	// テキストを取得.(tstringの参照バージョン.)
