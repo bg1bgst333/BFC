@@ -16,6 +16,7 @@ class CWindow;	// ウィンドウクラスCWindow
 struct HandlerConditions {
 	UINT m_nID;	// リソースID
 	UINT m_nCode;	// 通知コード
+	CWindow* w;	// 実行ウィンドウポインタ
 	int (CWindow::* m_fpHandler)(WPARAM wParam, LPARAM lParam);	// CWindowクラスメンバのハンドラ関数へのポインタm_fpHandler.
 };
 

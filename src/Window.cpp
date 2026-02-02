@@ -256,6 +256,20 @@ void CWindow::AddCommandHandler(UINT nID, UINT nCode, int(CWindow::* handler)(WP
 
 	// HandlerConditionsの生成と追加.
 	HandlerConditions* pCond = new HandlerConditions();	// HandlerConditionsオブジェクトを作成し, ポインタをpCondに格納.
+	pCond->w = this;	// pCond->wにthisを格納.
+	pCond->m_nID = nID;	// pCond->m_nIDにnIDを格納.
+	pCond->m_nCode = nCode;	// pCond->m_nCodeにnCodeを格納.
+	pCond->m_fpHandler = handler;	// pCond->m_fpHandlerにhandlerを格納.
+	m_mapHandlerMap.insert(std::pair<DWORD, HandlerConditions*>((DWORD)MAKEWPARAM(nID, nCode), pCond));	// m_mapHandlerMap.insertでnID, nCodeをMAKEWPARAMしたものをキー, pCondを値として登録.
+
+}
+
+// コマンドハンドラの追加.(実行ウィンドウポインタ指定.)
+void CWindow::AddCommandHandler(UINT nID, UINT nCode, CWindow* w, int(CWindow::* handler)(WPARAM wParam, LPARAM lParam)) {
+
+	// HandlerConditionsの生成と追加.
+	HandlerConditions* pCond = new HandlerConditions();	// HandlerConditionsオブジェクトを作成し, ポインタをpCondに格納.
+	pCond->w = w;	// pCond->wにwを格納.
 	pCond->m_nID = nID;	// pCond->m_nIDにnIDを格納.
 	pCond->m_nCode = nCode;	// pCond->m_nCodeにnCodeを格納.
 	pCond->m_fpHandler = handler;	// pCond->m_fpHandlerにhandlerを格納.
@@ -669,7 +683,7 @@ BOOL CWindow::OnCommand(WPARAM wParam, LPARAM lParam) {
 		pCond = m_mapHandlerMap[(const unsigned long)wParam];	// wParamでキーが取得できるので, それを使ってハンドラマップからHandlerConditionsオブジェクトポインタを引き出す.
 	}
 	if (pCond != NULL) {	// pCondがNULLでないなら, ハンドラ登録されている.
-		int iRet = (this->*pCond->m_fpHandler)(wParam, lParam);	// 登録したハンドラpCond->m_fpHandlerを呼び出し, 戻り値はiRetに格納.
+		int iRet = (pCond->w->*pCond->m_fpHandler)(wParam, lParam);	// 登録したハンドラpCond->w->*pCond->m_fpHandlerを呼び出し, 戻り値はiRetに格納.
 		if (iRet == 0) {	// 0なら処理をした.
 			return TRUE;	// 処理をしたのでTRUE.
 		}
