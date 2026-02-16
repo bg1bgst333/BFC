@@ -69,17 +69,81 @@ void CMultiViewItemsPanel::Add(LPCTSTR lpctszWindowName, int x, int y, int iWidt
 
 }
 
+// アイテムを末尾から追加する関数Add.
+BOOL CMultiViewItemsPanel::Add(const tstring& tstrKey, LPCTSTR lpctszWindowName, int x, int y, int iWidth, int iHeight, HINSTANCE hInstance) {
+
+	// マルチビューアイテムの追加.
+	return Insert(GetSize(), tstrKey, lpctszWindowName, x, y, iWidth, iHeight, hInstance);	// Insertで末尾に挿入.
+
+}
+
+// アイテムを挿入する関数Insert.
+BOOL CMultiViewItemsPanel::Insert(int iIndex, const tstring& tstrKey, LPCTSTR lpctszWindowName, int x, int y, int iWidth, int iHeight, HINSTANCE hInstance) {
+
+	// 範囲外はFALSE.
+	if (iIndex < 0 || iIndex > m_vecMultiViewItemList.size()) {
+		return FALSE;
+	}
+
+	// キー重複もFALSE.
+	if (m_mapMultiViewItemMap.find(tstrKey) != m_mapMultiViewItemMap.end()) {
+		return FALSE;
+	}
+
+	// マルチビューアイテムの挿入.
+	CMultiViewItem* pMultiViewItem = new CMultiViewItem();	// CMultiViewItemオブジェクトを生成し, ポインタをpMultiViewItemに格納.
+	pMultiViewItem->m_tstrKey = tstrKey;	// アイテムにもキーを持たせる.
+	pMultiViewItem->Create(lpctszWindowName, WS_CHILD | WS_VISIBLE, x, y, iWidth, iHeight, m_hWnd, (HMENU)(ID_MULTIVIEWITEM_START + m_nNextId), hInstance);	// pMultiViewItem->Createでアイテム作成.
+	m_vecMultiViewItemList.insert(m_vecMultiViewItemList.begin() + iIndex, pMultiViewItem);	// insertで挿入.
+
+	// マップにも登録.
+	m_mapMultiViewItemMap.insert(std::make_pair(tstrKey, pMultiViewItem));	// insertでキーとアイテムを登録.
+
+	// m_nNextIdをインクリメント.
+	m_nNextId++;
+
+	// TRUEを返す.
+	return TRUE;
+
+}
+
 // アイテムを末尾から削除する関数Remove.
-void CMultiViewItemsPanel::Remove() {
+BOOL CMultiViewItemsPanel::Remove() {
 
 	// マルチビューアイテムの削除.
-	if (m_nNextId > 0) {	// 0より大きい時.
-		CMultiViewItem* pMultiViewItem = m_vecMultiViewItemList[m_nNextId - 1];
-		pMultiViewItem->Destroy();
-		delete pMultiViewItem;
-		m_vecMultiViewItemList.pop_back();
-		m_nNextId--;
+	int n = GetSize();	// サイズを取得.
+	if (n > 0) {	// 1つ以上はある.
+		return Delete(n - 1);	// 最後の要素をDelete.
 	}
+	else {	// 0の場合.
+		return FALSE;
+	}
+
+}
+
+// アイテムを削除する関数Delete.
+BOOL CMultiViewItemsPanel::Delete(int iIndex) {
+
+	// 範囲外はFALSE.
+	if (iIndex < 0 || iIndex >= m_vecMultiViewItemList.size()) {
+		return FALSE;
+	}
+
+	// 対象を取得.
+	CMultiViewItem* pMultiViewItem = m_vecMultiViewItemList[iIndex];
+
+	// mapから削除.
+	m_mapMultiViewItemMap.erase(pMultiViewItem->m_tstrKey);
+
+	// vectorから削除.
+	m_vecMultiViewItemList.erase(m_vecMultiViewItemList.begin() + iIndex);
+
+	// オブジェクトの破棄.
+	pMultiViewItem->Destroy();	// 内部を破棄.
+	delete pMultiViewItem;	// ポインタを破棄.
+
+	// TRUE.
+	return TRUE;
 
 }
 

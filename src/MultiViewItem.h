@@ -14,6 +14,7 @@ class CMultiViewItem : public CUserControl {
 
 		// publicメンバ変数
 		std::map<tstring, CWindow*> m_mapChildMap;	// アイテムの子ウィンドウマップm_mapChildMap.
+		tstring m_tstrKey;	// キーm_tstrKey.
 
 		// publicメンバ関数
 		// コンストラクタ・デストラクタ
