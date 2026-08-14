@@ -46,3 +46,11 @@ int CApplication::ExitInstance() {
 	return 0;	// return‚Å0‚ğ•Ô‚·.
 
 }
+
+// ƒAƒCƒhƒ‹ˆ—ŠÖ”OnIdle.
+BOOL CApplication::OnIdle(LONG lCount) {
+
+	// ¡‰ñ‚Íí‚ÉFALSE‚ğ•Ô‚·.
+	return FALSE;	// return‚ÅFALSE‚ğ•Ô‚·.
+
+}
